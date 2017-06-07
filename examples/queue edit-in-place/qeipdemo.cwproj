@@ -1,0 +1,66 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{13580615-4073-458E-894E-127713F9D6EA}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">Win32</Platform>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>qeipdemo</AssemblyName>
+    <OutputName>qeipdemo</OutputName>
+    <DefineConstants>_ABCDllMode_=&gt;0%3b_ABCLinkMode_=&gt;1</DefineConstants>
+    <Model>Lib</Model>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <vid>full</vid>
+    <check_stack>True</check_stack>
+    <check_index>True</check_index>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <vid>off</vid>
+    <check_stack>False</check_stack>
+    <check_index>False</check_index>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="qeipdemo.clw">
+      <Generated>true</Generated>
+    </Compile>
+    <Compile Include="qeipdemo001.clw">
+      <Generated>true</Generated>
+    </Compile>
+    <Compile Include="qeipdemo002.clw">
+      <Generated>true</Generated>
+    </Compile>
+    <Compile Include="qeipdemo003.clw">
+      <Generated>true</Generated>
+    </Compile>
+    <Compile Include="qeipdemo004.clw">
+      <Generated>true</Generated>
+    </Compile>
+    <Compile Include="qeipdemo005.clw">
+      <Generated>true</Generated>
+    </Compile>
+    <Compile Include="qeipdemo006.clw">
+      <Generated>true</Generated>
+    </Compile>
+    <Compile Include="qeipdemo007.clw">
+      <Generated>true</Generated>
+    </Compile>
+    <Compile Include="qeipdemo008.clw">
+      <Generated>true</Generated>
+    </Compile>
+    <Compile Include="QEIPDEMO_BC.CLW">
+      <Generated>true</Generated>
+    </Compile>
+    <Compile Include="qeipdemo_BC0.CLW">
+      <Generated>true</Generated>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <FileDriver Include="DOS" />
+    <Library Include="qeipdemo.EXE.manifest" />
+  </ItemGroup>
+  <Import Project="$(ClarionBinPath)\SoftVelocity.Build.Clarion.targets" />
+</Project>

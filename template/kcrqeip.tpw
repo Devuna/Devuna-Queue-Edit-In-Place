@@ -1,0 +1,1043 @@
+#! ----------------------------------------------------------------
+#CONTROL(KCR_QueueEIP,'Edit In Place Support For Queue'),DESCRIPTION('Edit In Place Support For Queue('&%ActiveTemplateInstance&')'),MULTI
+#! ----------------------------------------------------------------
+#!
+  CONTROLS
+    LIST,AT(,,130,100),USE(?List),FROM(Queue:Browse),HVSCROLL,MSG('Browsing Queue'),ALRT(MouseLeft2)
+    BUTTON('&Insert'),AT(,,40,12),KEY(InsertKey),USE(?Insert)
+    BUTTON('&Edit'),AT(,,40,12),KEY(CtrlEnter),USE(?Change)
+    BUTTON('&Delete'),AT(,,40,12),KEY(DeleteKey),USE(?Delete)
+  END
+#!
+#BUTTON('&Configure Edit in Place'),AT(,,180)
+  #PROMPT('Include Popup Menu',CHECK),%QueueEIPIncludePopupMenu,AT(6),DEFAULT(1)
+  #PROMPT('Continuous Insert',CHECK),%QueueEIPContinuousInsert,AT(6),DEFAULT(0)
+  #PROMPT('Insertion point',DROP('Before|After|Append')),%QueueEIPInsertionPoint,DEFAULT('After')
+  #BOXED('Action upon tab at end of row')
+    #PROMPT('Save',DROP('Default|Always|Never|Prompted')),%QueueEIPTabAction,DEFAULT('Default')
+    #PROMPT('Remain editing',CHECK),%QueueEIPTabRemain,DEFAULT(0)
+  #ENDBOXED
+  #BOXED('Action upon ENTER key')
+    #PROMPT('Save',DROP('Default|Always|Never|Prompted')),%QueueEIPEnterAction,DEFAULT('Default')
+    #PROMPT('Remain editing',CHECK),%QueueEIPEnterRemain,DEFAULT(0)
+  #ENDBOXED
+  #BOXED('Default action upon arrow key')
+    #PROMPT('Save',DROP('Default|Always|Never|Prompted')),%QueueEIPArrowAction,DEFAULT('Default')
+    #PROMPT('Remain editing',CHECK),%QueueEIPArrowRemain,DEFAULT(1)
+    #PROMPT('Retain column',CHECK),%QueueEIPArrowRetain,DEFAULT(1)
+  #ENDBOXED
+  #BOXED('Action upon focus loss')
+    #PROMPT('Save',DROP('Default|Always|Never|Prompted')),%QueueEIPFocusAction,DEFAULT('Default')
+  #ENDBOXED
+  #!
+  #!
+  #BUTTON('Column &Specific'),MULTI(%QueueEditInPlaceList,%QueueEditInPlaceField&' - '&%GetQueueEIPStatus()),AT(,,180)
+    #PROMPT('&Queue Edit In Place Field:',FIELD),%QueueEditInPlaceField
+    #PROMPT('&Default Value:',@S64),%QueueEditInPlaceFieldDefaultValue
+    #PROMPT('&Allow Edit-In-Place',CHECK),%QueueAllowEIP,DEFAULT(%True)
+    #ENABLE(%QueueAllowEIP)
+      #ENABLE(%QueueEditInPlaceField)
+        #PROMPT('Edit &Class:',FROM(%pClassName)),%QueueEditClass,REQ,DEFAULT('EditEntryClass')
+      #ENDENABLE
+    #ENDENABLE
+    #BOXED('Column Properties')
+      #PROMPT('&Color Column',CHECK),%QueueColorColumn,AT(10),DEFAULT(%False)
+      #ENABLE(%QueueColorColumn)
+        #PROMPT('Text Color:',COLOR),%QueueTextColor,DEFAULT(16711680)
+        #PROMPT('Back Color:',COLOR),%QueueBackColor,DEFAULT(-1)
+        #PROMPT('Text Selected:',COLOR),%QueueTextSelected,DEFAULT(-1)
+        #PROMPT('Back Selected:',COLOR),%QueueBackSelected,DEFAULT(-1)
+      #ENDENABLE                
+    #ENDBOXED
+  #ENDBUTTON
+  #BUTTON('"Hot" Fields'),AT(10,,180),MULTI(%HotFields,%HotField)
+    #PROMPT('Hot Field:',FIELD),%HotField
+  #ENDBUTTON
+#ENDBUTTON
+#!
+#!
+#ATSTART
+  #DECLARE(%Colon)
+  #DECLARE(%ListControl)
+  #DECLARE(%InsertControl)
+  #DECLARE(%ChangeControl)
+  #DECLARE(%DeleteControl)
+  #FOR(%Control),WHERE(%ControlInstance = %ActiveTemplateInstance)
+    #CASE(%ControlOriginal)
+    #OF('?List')
+      #SET(%ListControl,%Control)
+    #OF('?Insert')
+      #SET(%InsertControl,%Control)
+    #OF('?Change')
+      #SET(%ChangeControl,%Control)
+    #OF('?Delete')
+      #SET(%DeleteControl,%Control)
+    #ENDCASE
+  #ENDFOR
+  #!
+  #DECLARE(%QEIPField),MULTI
+  #FIX(%Control,%ListControl)
+  #FOR(%ControlField)
+    #SET(%Colon,INSTRING(':',%ControlField))
+    #IF(%Colon)
+      #ADD(%QEIPField,SUB(%ControlField,%Colon+1,LEN(%ControlField)-%Colon))
+    #ELSE
+      #ADD(%QEIPField,%ControlField)
+    #ENDIF
+  #ENDFOR
+  #FOR(%HotFields)
+    #SET(%Colon,INSTRING(':',%HotField))
+    #IF(%Colon)
+      #ADD(%QEIPField,SUB(%HotField,%Colon+1,LEN(%HotField)-%Colon))
+    #ELSE
+      #ADD(%QEIPField,%HotField)
+    #ENDIF
+  #ENDFOR
+  #DECLARE(%QEIPEditClassName)
+  #DECLARE(%QEIPManagerName)
+  #DECLARE(%QEIPNewMethodName)
+  #DECLARE(%QEIPNewMethodPrototype)
+  #DECLARE(%InstancePrefix)
+  #SET(%InstancePrefix,'QEIP' & %ActiveTemplateInstance)
+  #SET(%QEIPManagerName,%InstancePrefix&':EM')
+#ENDAT
+#!
+#!
+#AT(%AfterGlobalIncludes)
+   INCLUDE('ABEIP.INC')
+   INCLUDE('KCRQEIP.INC')
+#ENDAT
+#!
+#!
+#AT(%DataSection),PRIORITY(5100),DESCRIPTION(%InstancePrefix & ' - Data')
+#SET(%ValueConstruct,%InstancePrefix & ':SaveEntry')
+%20ValueConstruct GROUP,PRE(%InstancePrefix)
+  #FIX(%Control,%ListControl)
+  #FOR(%ControlField)
+      #SELECT(%QEIPField,INSTANCE(%ControlField))
+%22QEIPField LIKE(%ControlField)
+  #ENDFOR
+  #FOR(%HotFields)
+    #SET(%Colon,INSTRING(':',%HotField))
+    #IF(%Colon)
+      #FIX(%QEIPField,SUB(%HotField,%Colon+1,LEN(%HotField)-%Colon))
+    #ELSE
+      #FIX(%QEIPField,%HotField)
+    #ENDIF
+%22QEIPField LIKE(%HotField)
+  #ENDFOR
+                     END
+#SET(%ValueConstruct,%InstancePrefix & ':Fields')
+%20ValueConstruct FieldPairsClass
+#IF(%QueueEIPIncludePopupMenu)
+#SET(%ValueConstruct,%InstancePrefix & ':PopupString')
+%20ValueConstruct STRING(20)
+#SET(%ValueConstruct,%InstancePrefix & ':PopupMgr')
+%20ValueConstruct PopupClass
+#ENDIF
+#SET(%ValueConstruct,%InstancePrefix & ':EditList')
+%20ValueConstruct QUEUE(EditQueue),PRE(%InstancePrefix)
+                     END
+%20QEIPManagerName CLASS(EIPManager)
+TabAction              BYTE
+EnterAction            BYTE
+ArrowAction            BYTE
+FocusLossAction        BYTE
+CurrentChoice          LONG,PRIVATE
+AddControl             PROCEDURE(<EditClass EC>,UNSIGNED Column,BYTE AutoFree = 0)
+ClearColumn            PROCEDURE,DERIVED
+Init                   PROCEDURE,BYTE,DERIVED,PROC
+InitControls           PROCEDURE,DERIVED
+Kill                   PROCEDURE,PROC,BYTE,DERIVED
+Next                   PROCEDURE,PROTECTED
+GetEdit                PROCEDURE,BYTE,DERIVED,PROTECTED
+PrimeRecord            PROCEDURE(BYTE SuppressClear = 0)
+ResetColumn            PROCEDURE,DERIVED,PROTECTED
+Run                    PROCEDURE(BYTE Req),BYTE
+TakeAction             PROCEDURE(UNSIGNED Action),DERIVED
+TakeCompleted          PROCEDURE(BYTE Force),DERIVED   ! Note this does -not- override the WindowManager variant
+TakeEvent              PROCEDURE,DERIVED,BYTE,PROC
+TakeFieldEvent         PROCEDURE,DERIVED,BYTE,PROC
+TakeFocusLoss          PROCEDURE,DERIVED
+TakeNewSelection       PROCEDURE,DERIVED,BYTE,PROC
+                     END
+
+#FOR(%QueueEditInPlaceList),WHERE(%QueueAllowEIP)
+  #SET(%QEIPEditClassName,%InstancePrefix&'::'&%QueueEditInPlaceField)
+%20QEIPEditClassName CLASS(%QueueEditClass)
+  #IF(%QueueEditClass = 'EditLookupClass')
+AskLookup              PROCEDURE(BYTE pForce),BYTE,DERIVED      ! Method added to host embed code
+  #ENDIF
+CreateControl          PROCEDURE(),DERIVED                      ! Method added to host embed code
+Init                   PROCEDURE(UNSIGNED FieldNumber,UNSIGNED ListBox,*? UseVar),DERIVED ! Method added to host embed code
+Kill                   PROCEDURE(),DERIVED                      ! Method added to host embed code
+SetAlerts              PROCEDURE(),DERIVED                      ! Method added to host embed code
+SetReadOnly            PROCEDURE(BYTE State),DERIVED            ! Method added to host embed code
+TakeAccepted           PROCEDURE(BYTE Action),BYTE,DERIVED      ! Method added to host embed code
+TakeEvent              PROCEDURE(UNSIGNED Event),BYTE,DERIVED   ! Method added to host embed code
+                     END
+#ENDFOR
+#ENDAT
+#!
+#!
+#AT(%WindowManagerMethodCodeSection,'Init','(),BYTE'),PRIORITY(9050),DESCRIPTION(%ListControl & ' - Edit in Place Initialization')
+  #FIX(%Control,%ListControl)
+%InstancePrefix:Fields.Init()
+  #FOR(%QEIPField)
+%InstancePrefix:Fields.AddPair(%InstancePrefix:SaveEntry.%QEIPField,%ControlFrom.%QEIPField)
+  #ENDFOR
+  #IF(%QueueEIPIncludePopupMenu)
+%InstancePrefix:PopupMgr.Init()
+    #IF(%InsertControl)
+%InstancePrefix:PopupMgr.AddItemMimic('Add',%InsertControl)
+    #ENDIF
+    #IF(%ChangeControl)
+%InstancePrefix:PopupMgr.AddItemMimic('Edit',%ChangeControl)
+    #ENDIF
+    #IF(%DeleteControl)
+%InstancePrefix:PopupMgr.AddItemMimic('Delete',%DeleteControl)
+    #ENDIF
+  #ENDIF
+GlobalErrors.AddErrors(QEIP:Errors)
+%ListControl{Prop:Alrt,QEIP:MouseLeft2Index} = MouseLeft2
+  #IF(%QueueEIPIncludePopupMenu)
+%ListControl{Prop:Alrt,QEIP:MouseRightIndex} = MouseRight
+  #ENDIF
+  #FOR(%QueueEditInPlaceList),WHERE(%QueueColorColumn)
+    #FIX(%ControlField,%QueueEditInPlaceField)
+    #IF (%ControlField)
+      #SET(%ValueConstruct,%ControlFieldFieldNo())
+%ListControl{PROPLIST:TextColor,%ValueConstruct} = %QueueTextColor
+%ListControl{PROPLIST:BackColor,%ValueConstruct} = %QueueBackColor
+%ListControl{PROPLIST:TextSelected,%ValueConstruct} = %QueueTextSelected
+%ListControl{PROPLIST:BackSelected,%ValueConstruct} = %QueueBackSelected
+    #ENDIF
+  #ENDFOR
+#ENDAT
+#!
+#!
+#AT(%WindowManagerMethodCodeSection,'Reset','(BYTE Force=0)'),PRIORITY(7500),DESCRIPTION(%ListControl & ' - Edit in Place Buttons')
+  #FIX(%Control,%ListControl)
+  #IF(%ChangeControl OR %DeleteControl)
+IF RECORDS(%ControlFrom)
+    #IF(%ChangeControl)
+   %ChangeControl{PROP:Disable} = FALSE
+    #ENDIF
+    #IF(%DeleteControl)
+   %DeleteControl{PROP:Disable} = FALSE
+    #ENDIF
+ELSE
+    #IF(%ChangeControl)
+   %ChangeControl{PROP:Disable} = TRUE
+    #ENDIF
+    #IF(%DeleteControl)
+   %DeleteControl{PROP:Disable} = TRUE
+    #ENDIF
+END
+  #ENDIF
+#ENDAT
+#!
+#!
+#AT(%ControlEventHandling,%InsertControl,'Accepted'),PRIORITY(5000)
+#FIX(%Control,%ListControl)
+LOOP
+  ThisWindow.VCRRequest = VCR:None
+  IF KEYCODE() = MouseRightUp
+    SETKEYCODE(0)
+  END
+  ReturnValue = %QEIPManagerName.Run(InsertRecord)
+  CASE ThisWindow.VCRRequest
+    #IF(%QueueEIPContinuousInsert)
+    OF VCR:Forward OROF VCR:Backward
+       %ListControl{PROP:Selected} = POINTER(%ControlFrom)
+    #ELSE
+    OF VCR:Forward
+       IF POINTER(%ControlFrom) < RECORDS(%ControlFrom)
+          %ListControl{PROP:Selected} = POINTER(%ControlFrom)
+       ELSE
+          ThisWindow.VCRRequest = VCR:None
+       END
+    OF VCR:Backward
+       IF POINTER(%ControlFrom) > 1
+          %ListControl{PROP:Selected} = POINTER(%ControlFrom)
+       ELSE
+          ThisWindow.VCRRequest = VCR:None
+       END
+    #ENDIF
+  END
+UNTIL ThisWindow.VCRRequest = VCR:None
+SELECT(%ListControl)
+ThisWindow.Reset()
+#ENDAT
+#!
+#!
+#AT(%ControlEventHandling,%ChangeControl,'Accepted'),PRIORITY(5000)
+#FIX(%Control,%ListControl)
+LOOP
+  ThisWindow.VCRRequest = VCR:None
+  IF KEYCODE() = MouseRightUp
+    SETKEYCODE(0)
+  END
+  ReturnValue = %QEIPManagerName.Run(ChangeRecord)
+  CASE ThisWindow.VCRRequest
+    OF VCR:Forward
+       IF POINTER(%ControlFrom) < RECORDS(%ControlFrom)
+          GET(%ControlFrom,POINTER(%ControlFrom)+1)
+          %ListControl{PROP:Selected} = POINTER(%ControlFrom)
+       ELSE
+          ThisWindow.VCRRequest = VCR:None
+       END
+    OF VCR:Backward
+       IF POINTER(%ControlFrom) > 1
+          GET(%ControlFrom,POINTER(%ControlFrom)-1)
+          %ListControl{PROP:Selected} = POINTER(%ControlFrom)
+       ELSE
+          ThisWindow.VCRRequest = VCR:None
+       END
+  END
+UNTIL ThisWindow.VCRRequest = VCR:None
+SELECT(%ListControl)
+ThisWindow.Reset()
+#ENDAT
+#!
+#!
+#AT(%ControlEventHandling,%DeleteControl,'Accepted'),PRIORITY(5000)
+ReturnValue = %QEIPManagerName.Run(DeleteRecord)
+ThisWindow.Reset()
+#ENDAT
+#!
+#!
+#!AT(%ControlHandling,%ListControl),PRIORITY(5500)
+#AT(%ControlEventHandling,%ListControl,'AlertKey'),PRIORITY(7800)
+#FIX(%Control,%ListControl)
+CASE KEYCODE()
+  OF MouseLeft2
+   #IF(%ChangeControl)
+     IF ~%ChangeControl{PROP:Disable} AND RECORDS(%ControlFrom)
+        POST(EVENT:Accepted,%ChangeControl)
+     END
+   #ENDIF
+  #IF(%QueueEIPIncludePopupMenu)
+  OF MouseRight
+     %InstancePrefix:PopupString = %InstancePrefix:PopupMgr.Ask()
+  #ENDIF
+END
+#ENDAT
+#!
+#!
+#AT(%QEIPAddControlCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.AddControl(E,Column,AutoFree)
+#ENDAT
+#!
+#!
+#AT(%QEIPClearColumnCodeSection,%ActiveTemplateInstance)
+#PRIORITY(1000),DESCRIPTION('Update Use Variables')
+IF KEYCODE() <> EscKey
+   IF SELF.LastColumn
+#PRIORITY(1020),DESCRIPTION('Before Update')
+      UPDATE
+      GET(SELF.EQ,SELF.Column)
+#PRIORITY(1100),DESCRIPTION('Before PUT('&%ControlFrom&')')
+      PUT(%ControlFrom)
+      ASSERT(~ERRORCODE())
+#PRIORITY(1120),DESCRIPTION('After PUT('&%ControlFrom&')')
+   END
+END
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.ClearColumn()
+#ENDAT
+#!
+#!
+#AT(%QEIPInitDataSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Default Data')
+RetVal BYTE(RequestCancelled)
+AtEnd  BYTE,AUTO
+#ENDAT
+#!
+#!
+#AT(%QEIPInitCodeSection,%ActiveTemplateInstance)
+#PRIORITY(1000),DESCRIPTION('Setup')
+  #IF (%QueueEIPTabRemain OR %QueueEIPTabAction <> 'Default')
+SELF.TabAction = EIPAction:%QueueEIPTabAction%(CHOOSE(%QueueEIPTabRemain,'+EIPAction:Remain',''))
+  #ENDIF
+  #IF (%QueueEIPEnterRemain OR %QueueEIPEnterAction <> 'Default')
+SELF.EnterAction = EIPAction:%QueueEIPEnterAction%(CHOOSE(%QueueEIPEnterRemain,'+EIPAction:Remain',''))
+  #ENDIF
+  #IF (%QueueEIPFocusAction <> 'Default')
+SELF.FocusLossAction = EIPAction:%QueueEIPFocusAction
+  #ENDIF
+  #IF (%QueueEIPArrowAction <> 'Default' OR %QueueEIPArrowRemain OR %QueueEIPArrowRetain)
+SELF.ArrowAction = EIPAction:%QueueEIPArrowAction%(CHOOSE(%QueueEIPArrowRemain,'+EIPAction:Remain',''))%(CHOOSE(%QueueEIPArrowRetain,'+EIPAction:RetainColumn',''))
+  #ENDIF
+  #IF (%QueueEIPInsertionPoint <> 'After')
+SELF.Insert = EIPAction:%QueueEIPInsertionPoint
+  #ENDIF
+SELF.Arrow &= SELF.ArrowAction
+SELF.Enter &= SELF.EnterAction
+SELF.EQ &= %InstancePrefix:EditList
+SELF.Errors &= NULL
+SELF.Fields &= %InstancePrefix:Fields
+SELF.FocusLoss &= SELF.FocusLossAction
+SELF.ListControl = %ListControl
+SELF.Tab &= SELF.TabAction
+SELF.VCRRequest &= ThisWindow.VCRRequest
+  #!
+  #! Insert user defined EditInPlaceClasses
+  #!
+  #FIX(%Control,%ListControl)
+  #FOR(%QueueEditInPlaceList)
+    #FIX(%ControlField,%QueueEditInPlaceField)
+    #IF (%ControlField)
+      #IF(%QueueAllowEIP)
+        #SET(%ValueConstruct,%InstancePrefix&'::'&%QueueEditInPlaceField&','&%ControlFieldFieldNo())
+SELF.AddControl(%ValueConstruct,0)
+      #ELSE
+        #SET(%ValueConstruct,','&%ControlFieldFieldNo())
+SELF.AddControl(%ValueConstruct,0)
+      #ENDIF
+    #ELSE
+      #ERROR('Unable to find edit-in-place field (' & %QueueEditInPlaceField & ') in list box')
+    #ENDIF
+  #ENDFOR
+  #!
+  #!
+SELF.CurrentChoice = CHOICE(%ListControl)
+IF ~SELF.CurrentChoice
+   SELF.CurrentChoice = 1
+   %ListControl{PROP:Selected} = 1
+END
+GET(%ControlFrom,SELF.CurrentChoice)
+#PRIORITY(2000),DESCRIPTION('CASE SELF.Req')
+CASE SELF.Req
+OF InsertRecord
+#PRIORITY(2500),DESCRIPTION('Start of InsertRecord Code')
+  IF RECORDS(%ControlFrom)
+    AtEnd = CHOOSE(SELF.CurrentChoice = RECORDS(%ControlFrom))
+    CASE(SELF.Insert)
+      OF EIPAction:Before
+         !Default
+      OF EIPAction:Append
+         SELF.CurrentChoice = RECORDS(%ControlFrom)+1
+    ELSE
+         SELF.CurrentChoice += 1
+    END
+  ELSE
+    SELF.CurrentChoice = 1
+  END
+  SELF.PrimeRecord()
+#PRIORITY(3000),DESCRIPTION('InsertRecord Before ADD')
+  ADD(%ControlFrom,SELF.CurrentChoice)
+  ASSERT(~ERRORCODE())
+  DISPLAY(%ListControl)
+  SELECT(%ListControl,SELF.CurrentChoice)
+  SELF.Column = 1
+OF DeleteRecord
+#PRIORITY(3500),DESCRIPTION('Start of DeleteRecord Code')
+  RetVal = CHOOSE(GlobalErrors.Throw(Msg:ConfirmDelete) = Level:Benign,RequestCompleted,RequestCancelled)
+  IF RetVal = RequestCompleted
+#PRIORITY(4000),DESCRIPTION('DeleteRecord Before DELETE')
+     DELETE(%ControlFrom)
+#PRIORITY(4500),DESCRIPTION('DeleteRecord After DELETE')
+  END
+  SELF.Response = RetVal
+  RETURN Level:Fatal
+OF ChangeRecord
+#PRIORITY(4800),DESCRIPTION('Start of ChangeRecord Code')
+  %InstancePrefix:SaveEntry = %ControlFrom
+  IF KEYCODE() = MouseLeft2
+    SELF.Column = %ListControl{PROPLIST:MouseUpField}
+  END
+ELSE
+  ASSERT(0)
+END
+GET(%ControlFrom,SELF.CurrentChoice)
+SELF.Fields.AssignRightToLeft()
+%ListControl{PROP:Alrt,QEIP:MouseLeft2Index} = 0 ! Prevent alert short-stopping double click
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+RetVal = PARENT.Init()
+#ENDAT
+#!
+#!
+#AT(%QEIPInitControlsCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+SELF.EQ.Field = 1
+PARENT.InitControls()
+#PRIORITY(5100),DESCRIPTION('Column Colors')
+  #FOR(%QueueEditInPlaceList),WHERE(%QueueColorColumn)
+    #FIX(%ControlField,%QueueEditInPlaceField)
+    #IF (%ControlField)
+      #SET(%ValueConstruct,%ControlFieldFieldNo())
+%ListControl{PROPLIST:TextColor,%ValueConstruct} = %QueueTextColor
+%ListControl{PROPLIST:BackColor,%ValueConstruct} = %QueueBackColor
+%ListControl{PROPLIST:TextSelected,%ValueConstruct} = %QueueTextSelected
+%ListControl{PROPLIST:BackSelected,%ValueConstruct} = %QueueBackSelected
+    #ENDIF
+  #ENDFOR
+#ENDAT
+#!
+#!
+#AT(%QEIPKillDataSection,%ActiveTemplateInstance)
+#!PRIORITY(5000),DESCRIPTION('Default Data')
+ReturnValue BYTE,AUTO
+I           LONG,AUTO
+J           LONG,AUTO
+#ENDAT
+#!
+#!
+#AT(%QEIPKillCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+ReturnValue = PARENT.Kill()
+!Now dispose of any edit classes we created
+J = RECORDS(%InstancePrefix:EditList)
+LOOP I = 1 TO J
+  GET(%InstancePrefix:EditList,I)
+  IF ~%InstancePrefix:EditList.Control &= NULL AND %InstancePrefix:EditList.FreeUp = TRUE
+     DISPOSE(%InstancePrefix:EditList.Control)
+  END
+END
+!and free up the edit queue
+FREE(%InstancePrefix:EditList)
+  #FOR(%QueueEditInPlaceList),WHERE(%QueueColorColumn)
+    #FIX(%ControlField,%QueueEditInPlaceField)
+    #IF (%ControlField)
+      #SET(%ValueConstruct,%ControlFieldFieldNo())
+%ListControl{PROPLIST:TextColor,%ValueConstruct} = %QueueTextColor
+%ListControl{PROPLIST:BackColor,%ValueConstruct} = %QueueBackColor
+%ListControl{PROPLIST:TextSelected,%ValueConstruct} = %QueueTextSelected
+%ListControl{PROPLIST:BackSelected,%ValueConstruct} = %QueueBackSelected
+    #ENDIF
+  #ENDFOR
+#ENDAT
+#!
+#!
+#AT(%QEIPNextCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.Next()
+#ENDAT
+#!
+#!
+#AT(%QEIPGetEditDataSection,%ActiveTemplateInstance)
+ReturnValue BYTE,AUTO
+#ENDAT
+#!
+#!
+#AT(%QEIPGetEditCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+ReturnValue = PARENT.GetEdit()
+#ENDAT
+#!
+#!
+#AT(%QEIPPrimeRecordCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Column Specific Defaults')
+  #FOR(%QueueEditInPlaceList)
+    #IF(%QueueEditInPlaceFieldDefaultValue)
+%ControlFrom.%QueueEditInPlaceField = %QueueEditInPlaceFieldDefaultValue
+    #ELSE
+CLEAR(%ControlFrom.%QueueEditInPlaceField)
+    #ENDIF
+  #ENDFOR
+#ENDAT
+#!
+#!
+#AT(%QEIPResetColumnCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.ResetColumn()
+#ENDAT
+#!
+#!
+#AT(%QEIPRunDataSection,%ActiveTemplateInstance)
+ReturnValue BYTE,AUTO
+#ENDAT
+#!
+#!
+#AT(%QEIPRunCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+ReturnValue = PARENT.Run(Req)
+#ENDAT
+#!
+#!
+#AT(%QEIPTakeActionCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.TakeAction(Action)
+#ENDAT
+#!
+#!
+#AT(%QEIPTakeCompletedDataSection,%ActiveTemplateInstance)
+SaveAns UNSIGNED,AUTO
+#ENDAT
+#AT(%QEIPTakeCompletedCodeSection,%ActiveTemplateInstance)
+#PRIORITY(1000),DESCRIPTION('Setup')
+  #FIX(%Control,%ListControl)
+SELF.Again = 0
+SELF.ClearColumn
+SaveAns = CHOOSE(Force = 0,Button:Yes,Force)
+IF SELF.Fields.Equal()
+    SaveAns = Button:No
+ELSE
+   IF ~Force
+      SaveAns = GlobalErrors.Message(Msg:SaveRecord,Button:Yes+Button:No+Button:Cancel,Button:Yes)
+   END
+END
+Force = 0
+SELF.Response = RequestCancelled
+CASE SaveAns
+  OF Button:Cancel
+     SELF.Again = 1
+  OF Button:No
+     IF SELF.Req = InsertRecord
+        DELETE(%ControlFrom)
+        IF SELF.CurrentChoice AND SELF.Insert <> EIPAction:Before
+           SELF.CurrentChoice -= 1
+        END
+     ELSE
+        SELF.Fields.AssignLeftToRight
+        PUT(%ControlFrom)
+     END
+  OF Button:Yes
+     SELF.Response = RequestCompleted
+END
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.TakeCompleted(Force)
+#ENDAT
+#!
+#!
+#AT(%QEIPTakeEventDataSection,%ActiveTemplateInstance)
+ReturnValue BYTE,AUTO
+#ENDAT
+#!
+#!
+#AT(%QEIPTakeEventCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+ReturnValue = PARENT.TakeEvent()
+#ENDAT
+#!
+#!
+#AT(%QEIPTakeFieldEventDataSection,%ActiveTemplateInstance)
+ReturnValue BYTE,AUTO
+#ENDAT
+#!
+#!
+#AT(%QEIPTakeFieldEventCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+ReturnValue = PARENT.TakeFieldEvent()
+#ENDAT
+#!
+#!
+#AT(%QEIPTakeFocusLossCodeSection,%ActiveTemplateInstance)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.TakeFocusLoss()
+#ENDAT
+#!
+#!
+#AT(%QEIPTakeNewSelectionDataSection,%ActiveTemplateInstance)
+ReturnValue BYTE,AUTO
+#ENDAT
+#!
+#!
+#AT(%QEIPTakeNewSelectionCodeSection,%ActiveTemplateInstance)
+#PRIORITY(4000),DESCRIPTION('IF Clause')
+IF FIELD() = %ListControl
+  IF CHOICE(%ListControl) = SELF.CurrentChoice
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+    ReturnValue = PARENT.TakeNewSelection()
+#PRIORITY(6000),DESCRIPTION('ELSE Clause')
+  ELSE                                  ! Focus change to different record
+    SELF.TakeFocusLoss
+    IF SELF.Again
+      SELECT(%ListControl,SELF.CurrentChoice)
+      ReturnValue = Level:Benign
+    ELSE
+      SELF.CurrentChoice = CHOICE(%ListControl)
+      SELF.Response = RequestCancelled           ! Avoid cursor following 'new' record
+      ReturnValue = Level:Fatal
+    END
+  END
+END
+#ENDAT
+#!
+#!
+#!==================================================================================
+#AT(%QEIPFieldAskLookupDataSection,%ActiveTemplateInstance,%QueueEditInPlaceField),WHERE(%QueueEditClass = 'EditLookupClass')
+ReturnValue BYTE
+#ENDAT
+#!
+#!
+#AT(%QEIPFieldAskLookupCodeSection,%ActiveTemplateInstance,%QueueEditInPlaceField),WHERE(%QueueEditClass = 'EditLookupClass')
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+ReturnValue = PARENT.AskLookup(pForce)
+#PRIORITY(7500),DESCRIPTION('Method Return')
+RETURN ReturnValue
+#ENDAT
+#!
+#!
+#AT(%QEIPFieldCreateControlCodeSection,%ActiveTemplateInstance,%QueueEditInPlaceField)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.CreateControl()
+#ENDAT
+#!
+#!
+#AT(%QEIPFieldInitCodeSection,%ActiveTemplateInstance,%QueueEditInPlaceField)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.Init(FieldNumber,ListBox,UseVar)
+#ENDAT
+#!
+#!
+#AT(%QEIPFieldKillCodeSection,%ActiveTemplateInstance,%QueueEditInPlaceField)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.Kill()
+#ENDAT
+#!
+#!
+#AT(%QEIPFieldSetAlertsCodeSection,%ActiveTemplateInstance,%QueueEditInPlaceField)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.SetAlerts()
+#ENDAT
+#!
+#!
+#AT(%QEIPFieldSetReadOnlyCodeSection,%ActiveTemplateInstance,%QueueEditInPlaceField)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+PARENT.SetReadOnly(State)
+#ENDAT
+#!
+#!
+#AT(%QEIPFieldTakeAcceptedDataSection,%ActiveTemplateInstance,%QueueEditInPlaceField)
+ReturnValue BYTE
+#ENDAT
+#!
+#!
+#AT(%QEIPFieldTakeAcceptedCodeSection,%ActiveTemplateInstance,%QueueEditInPlaceField)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+ReturnValue = PARENT.TakeAccepted(Action)
+#ENDAT
+#!
+#!
+#AT(%QEIPFieldTakeEventDataSection,%ActiveTemplateInstance,%QueueEditInPlaceField)
+ReturnValue BYTE
+#ENDAT
+#!
+#!
+#AT(%QEIPFieldTakeEventCodeSection,%ActiveTemplateInstance,%QueueEditInPlaceField)
+#PRIORITY(5000),DESCRIPTION('Parent Call')
+ReturnValue = PARENT.TakeEvent(Event)
+#ENDAT
+#!
+#!
+#!==================================================================================
+#AT(%LocalProcedures)
+  #FIX(%Control,%ListControl)
+%QEIPManagerName.AddControl            PROCEDURE(<EditClass E>,UNSIGNED Column,BYTE AutoFree)
+#SET(%QEIPNewMethodName,'AddControl')
+#SET(%QEIPNewMethodPrototype,'(<<EditClass EC>,UNSIGNED Column,BYTE AutoFree = 0)')
+#EMBED(%QEIPAddControlDataSection,'AddControl Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPAddControlCodeSection,'AddControl Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE','COLOR:Black'))
+  RETURN
+
+%QEIPManagerName.ClearColumn           PROCEDURE
+#SET(%QEIPNewMethodName,'ClearColumn')
+#SET(%QEIPNewMethodPrototype,'(),VIRTUAL')
+#EMBED(%QEIPClearColumnDataSection,'ClearColumn Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPClearColumnCodeSection,'ClearColumn Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN
+
+%QEIPManagerName.Init                  PROCEDURE
+#SET(%QEIPNewMethodName,'Init')
+#SET(%QEIPNewMethodPrototype,'(),BYTE,VIRTUAL,PROC')
+#EMBED(%QEIPInitDataSection,'Init Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPInitCodeSection,'Init Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN(RetVal)
+
+%QEIPManagerName.InitControls          PROCEDURE
+#SET(%QEIPNewMethodName,'InitControls')
+#SET(%QEIPNewMethodPrototype,'(),VIRTUAL')
+#EMBED(%QEIPInitControlsDataSection,'InitControls Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPInitControlsCodeSection,'InitControls Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN
+
+%QEIPManagerName.Kill                  PROCEDURE
+#SET(%QEIPNewMethodName,'Kill')
+#SET(%QEIPNewMethodPrototype,'(),BYTE,VIRTUAL,PROC')
+#EMBED(%QEIPKillDataSection,'Kill Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPKillCodeSection,'Kill Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN(ReturnValue)
+
+%QEIPManagerName.Next                  PROCEDURE
+#SET(%QEIPNewMethodName,'Next')
+#SET(%QEIPNewMethodPrototype,'(),PROTECTED')
+#EMBED(%QEIPNextDataSection,'Next Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPNextCodeSection,'Next Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorProtectedMethod))
+  RETURN
+
+%QEIPManagerName.GetEdit               PROCEDURE
+#SET(%QEIPNewMethodName,'GetEdit')
+#SET(%QEIPNewMethodPrototype,'(),BYTE,VIRTUAL,PROTECTED')
+#EMBED(%QEIPGetEditDataSection,'GetEdit Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPGetEditCodeSection,'GetEdit Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod+%ColorProtectedMethod))
+  RETURN(ReturnValue)
+
+%QEIPManagerName.PrimeRecord           PROCEDURE(BYTE SC)
+#SET(%QEIPNewMethodName,'PrimeRecord')
+#SET(%QEIPNewMethodPrototype,'(BYTE SuppressClear = 0)')
+#EMBED(%QEIPPrimeRecordDataSection,'PrimeRecord Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #FIX(%Control,%ListControl)
+  IF ~SC
+     CLEAR(%ControlFrom)
+  END
+  #EMBED(%QEIPPrimeRecordCodeSection,'PrimeRecord Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE','COLOR:Black'))
+  RETURN
+
+%QEIPManagerName.ResetColumn           PROCEDURE
+#SET(%QEIPNewMethodName,'ResetColumn')
+#SET(%QEIPNewMethodPrototype,'(),VIRTUAL,PROTECTED')
+#EMBED(%QEIPResetColumnDataSection,'ResetColumn Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPResetColumnCodeSection,'ResetColumn Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod+%ColorProtectedMethod))
+  RETURN
+
+%QEIPManagerName.Run                   PROCEDURE(BYTE Req)
+#SET(%QEIPNewMethodName,'Run')
+#SET(%QEIPNewMethodPrototype,'(BYTE Req),BYTE')
+#EMBED(%QEIPRunDataSection,'Run Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPRunCodeSection,'Run Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE','COLOR:Black'))
+  RETURN(ReturnValue)
+
+%QEIPManagerName.TakeAction            PROCEDURE(UNSIGNED Action)
+#SET(%QEIPNewMethodName,'TakeAction')
+#SET(%QEIPNewMethodPrototype,'(UNSIGNED Action),VIRTUAL')
+#EMBED(%QEIPTakeActionDataSection,'TakeAction Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPTakeActionCodeSection,'TakeAction Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod))
+#EMBED(%QEIPTakeActionRoutineSection,'TakeAction Routine Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('ROUTINE',%ColorVirtualMethod))
+
+%QEIPManagerName.TakeCompleted         PROCEDURE(BYTE Force)
+#SET(%QEIPNewMethodName,'TakeCompleted')
+#SET(%QEIPNewMethodPrototype,'(BYTE Force),VIRTUAL')
+#EMBED(%QEIPTakeCompletedDataSection,'TakeCompleted Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPTakeCompletedCodeSection,'TakeCompleted Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN
+
+%QEIPManagerName.TakeEvent             PROCEDURE
+#SET(%QEIPNewMethodName,'TakeEvent')
+#SET(%QEIPNewMethodPrototype,'(),BYTE,VIRTUAL,PROC')
+#EMBED(%QEIPTakeEventDataSection,'TakeEvent Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPTakeEventCodeSection,'TakeEvent Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN(ReturnValue)
+
+%QEIPManagerName.TakeFieldEvent        PROCEDURE
+#SET(%QEIPNewMethodName,'TakeFieldEvent')
+#SET(%QEIPNewMethodPrototype,'(),BYTE,VIRTUAL,PROC')
+#EMBED(%QEIPTakeFieldEventDataSection,'TakeFieldEvent Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPTakeFieldEventCodeSection,'TakeFieldEvent Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN(ReturnValue)
+
+%QEIPManagerName.TakeFocusLoss         PROCEDURE
+#SET(%QEIPNewMethodName,'TakeFocusLoss')
+#SET(%QEIPNewMethodPrototype,'(),VIRTUAL')
+#EMBED(%QEIPTakeFocusLossDataSection,'TakeFocusLoss Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPTakeFocusLossCodeSection,'TakeFocusLoss Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN
+
+%QEIPManagerName.TakeNewSelection      PROCEDURE
+#SET(%QEIPNewMethodName,'TakeNewSelection')
+#SET(%QEIPNewMethodPrototype,'(),BYTE,VIRTUAL,PROC')
+#EMBED(%QEIPTakeNewSelectionDataSection,'TakeNewSelection Data Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPTakeNewSelectionCodeSection,'TakeNewSelection Code Section'),%ActiveTemplateInstance,TREE(%GetEIPMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN(ReturnValue)
+
+#!==================================================================================
+#FOR(%QueueEditInPlaceList),WHERE(%QueueAllowEIP)
+
+#IF(%QueueEditClass = 'EditLookupClass')
+%InstancePrefix::%QueueEditInPlaceField.AskLookup  PROCEDURE(BYTE pForce)
+#SET(%QEIPNewMethodName,'AskLookup')
+#SET(%QEIPNewMethodPrototype,'(BYTE pForce),VIRTUAL,PROTECTED')
+#EMBED(%QEIPFieldAskLookupDataSection,'AskLookup Data Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,%QEIPNewMethodName,%QEIPNewMethodPrototype,TREE(%GetEIPFieldMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPFieldAskLookupCodeSection,'AskLookup Code Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,%QEIPNewMethodName,%QEIPNewMethodPrototype,TREE(%GetEIPFieldMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN ReturnValue
+#ENDIF
+
+%InstancePrefix::%QueueEditInPlaceField.CreateControl    PROCEDURE
+#SET(%QEIPNewMethodName,'CreateControl')
+#SET(%QEIPNewMethodPrototype,'(),VIRTUAL,PROTECTED')
+#EMBED(%QEIPFieldCreateControlDataSection,'CreateControl Data Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,%QEIPNewMethodName,%QEIPNewMethodPrototype,TREE(%GetEIPFieldMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPFieldCreateControlCodeSection,'CreateControl Code Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,%QEIPNewMethodName,%QEIPNewMethodPrototype,TREE(%GetEIPFieldMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN
+
+%InstancePrefix::%QueueEditInPlaceField.Init    PROCEDURE(UNSIGNED FieldNumber,UNSIGNED ListBox,*? UseVar)
+#SET(%QEIPNewMethodName,'Init')
+#SET(%QEIPNewMethodPrototype,'(UNSIGNED FieldNumber,UNSIGNED ListBox,*? UseVar),VIRTUAL')
+#EMBED(%QEIPFieldInitDataSection,'Init Data Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPFieldInitCodeSection,'Init Code Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN
+
+%InstancePrefix::%QueueEditInPlaceField.Kill    PROCEDURE
+#SET(%QEIPNewMethodName,'Kill')
+#SET(%QEIPNewMethodPrototype,'(),VIRTUAL')
+#EMBED(%QEIPFieldKillDataSection,'Kill Data Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPFieldKillCodeSection,'Kill Code Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN
+
+%InstancePrefix::%QueueEditInPlaceField.SetAlerts    PROCEDURE
+#SET(%QEIPNewMethodName,'SetAlerts')
+#SET(%QEIPNewMethodPrototype,'(),VIRTUAL')
+#EMBED(%QEIPFieldSetAlertsDataSection,'SetAlerts Data Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPFieldSetAlertsCodeSection,'SetAlerts Code Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN
+
+%InstancePrefix::%QueueEditInPlaceField.SetReadOnly    PROCEDURE(BYTE State)
+#SET(%QEIPNewMethodName,'SetReadOnly')
+#SET(%QEIPNewMethodPrototype,'(BYTE State),VIRTUAL')
+#EMBED(%QEIPFieldSetReadOnlyDataSection,'SetReadOnly Data Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPFieldSetReadOnlyCodeSection,'SetReadOnly Code Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN
+
+%InstancePrefix::%QueueEditInPlaceField.TakeAccepted    PROCEDURE(BYTE Action)
+#SET(%QEIPNewMethodName,'TakeAccepted')
+#SET(%QEIPNewMethodPrototype,'(BYTE Action),BYTE,VIRTUAL')
+#EMBED(%QEIPFieldTakeAcceptedDataSection,'TakeAccepted Data Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPFieldTakeAcceptedCodeSection,'TakeAccepted Code Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN(ReturnValue)
+
+%InstancePrefix::%QueueEditInPlaceField.TakeEvent    PROCEDURE(UNSIGNED Event)
+#SET(%QEIPNewMethodName,'TakeEvent')
+#SET(%QEIPNewMethodPrototype,'(UNSIGNED Event),BYTE,VIRTUAL')
+#EMBED(%QEIPFieldTakeEventDataSection,'TakeEvent Data Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('DATA',%ColorDataSection))
+  CODE
+  #EMBED(%QEIPFieldTakeEventCodeSection,'TakeEvent Code Section'),%ActiveTemplateInstance,%QueueEditInPlaceField,TREE(%GetEIPFieldMethodTreeDesc('CODE',%ColorVirtualMethod))
+  RETURN(ReturnValue)
+
+#ENDFOR
+#!==================================================================================
+#ENDAT
+#!
+#!
+#GROUP(%GetEIPMethodTreeDesc,%EmbedSection,%EmbedColor),AUTO
+#EQUATE(%EmbedDesc,'Local Objects|EIP Manager for '&%ControlFrom&' using '&%ListControl&' (EIPManager)|'&%QEIPNewMethodName)
+#IF(%ShowPROCEDUREonEmbeds)
+  #SET(%EmbedDesc,%EmbedDesc&' PROCEDURE')
+#ENDIF
+#SET(%EmbedDesc,%EmbedDesc&%QEIPNewMethodPrototype)
+#IF(%ColorEntriesOnEmbeds)
+  #SET(%EmbedDesc,%EmbedDesc&'{{COLOR('&%EmbedColor&')}')
+#ENDIF
+#CASE(UPPER(%EmbedSection))
+#OF('DATA')
+  #IF(%ColorEntriesOnEmbeds)
+    #SET(%EmbedDesc,%EmbedDesc&'|DATA{{COLOR('&%ColorDataSection&')}')
+  #ELSE
+    #SET(%EmbedDesc,%EmbedDesc&'|DATA')
+  #ENDIF
+#OF('CODE')
+  #IF(%ColorEntriesOnEmbeds)
+    #SET(%EmbedDesc,%EmbedDesc&'|CODE{{COLOR('&%ColorCodeSection&'),PRIORITY(5000)}')
+  #ELSE
+    #SET(%EmbedDesc,%EmbedDesc&'|CODE{{PRIORITY(5000)}')
+  #ENDIF
+#OF('ROUTINE')
+  #IF(%ColorEntriesOnEmbeds)
+    #SET(%EmbedDesc,%EmbedDesc&'|CODE (Routines){{COLOR('&%ColorCodeSection&'),PRIORITY(5000)}')
+  #ELSE
+    #SET(%EmbedDesc,%EmbedDesc&'|CODE (Routines){{PRIORITY(5000)}')
+  #ENDIF
+#ELSE
+  #ASSERT(%False,'GetNewMethodTreeDesc: Unknown EmbedSection')
+#ENDCASE
+#RETURN(%EmbedDesc)
+#!
+#!
+#GROUP(%GetEIPFieldMethodTreeDesc,%EmbedSection,%EmbedColor),AUTO
+#EQUATE(%EmbedDesc,'Local Objects|EIP Field Manager for '&%ControlFrom&' using '&%ListControl&' for field '&%QueueEditInPlaceField&' ('&%QueueEditClass&')|'&%QEIPNewMethodName)
+#IF(%ShowPROCEDUREonEmbeds)
+  #SET(%EmbedDesc,%EmbedDesc&' PROCEDURE')
+#ENDIF
+#SET(%EmbedDesc,%EmbedDesc&%QEIPNewMethodPrototype)
+#IF(%ColorEntriesOnEmbeds)
+  #SET(%EmbedDesc,%EmbedDesc&'{{COLOR('&%EmbedColor&')}')
+#ENDIF
+#CASE(UPPER(%EmbedSection))
+#OF('DATA')
+  #IF(%ColorEntriesOnEmbeds)
+    #SET(%EmbedDesc,%EmbedDesc&'|DATA{{COLOR('&%ColorDataSection&')}')
+  #ELSE
+    #SET(%EmbedDesc,%EmbedDesc&'|DATA')
+  #ENDIF
+#OF('CODE')
+  #IF(%ColorEntriesOnEmbeds)
+    #SET(%EmbedDesc,%EmbedDesc&'|CODE{{COLOR('&%ColorCodeSection&'),PRIORITY(5000)}')
+  #ELSE
+    #SET(%EmbedDesc,%EmbedDesc&'|CODE{{PRIORITY(5000)}')
+  #ENDIF
+#OF('ROUTINE')
+  #IF(%ColorEntriesOnEmbeds)
+    #SET(%EmbedDesc,%EmbedDesc&'|CODE (Routines){{COLOR('&%ColorCodeSection&'),PRIORITY(5000)}')
+  #ELSE
+    #SET(%EmbedDesc,%EmbedDesc&'|CODE (Routines){{PRIORITY(5000)}')
+  #ENDIF
+#ELSE
+  #ASSERT(%False,'GetNewMethodTreeDesc: Unknown EmbedSection')
+#ENDCASE
+#RETURN(%EmbedDesc)
+#!
+#!
+#GROUP(%GetQueueEIPStatus),PRESERVE
+#IF(%QueueAllowEIP AND %QueueEditInPlaceField)
+  #RETURN('Enabled using '&%QueueEditClass)
+#ENDIF
+#RETURN('Disabled')
+#!
+#!
+#GROUP(%ControlFieldFieldNo),AUTO
+#!************************************************************
+#!* The %ControlField shuld be fixed before call this function
+#!************************************************************
+#DECLARE(%lControlField)
+#DECLARE(%lControlFieldFieldNo)
+#SET(%lControlFieldFieldNo,0)
+#SET(%lControlField,%ControlField)
+#FOR(%ControlField)
+    #SET(%lControlFieldFieldNo,%lControlFieldFieldNo+1)
+    #IF(%ControlField = %lControlField)
+       #BREAK
+    #ENDIF
+    #IF(%ControlFieldHasColor)
+        #SET(%lControlFieldFieldNo,%lControlFieldFieldNo+4)
+    #ENDIF
+    #IF(%ControlFieldHasIcon)
+        #SET(%lControlFieldFieldNo,%lControlFieldFieldNo+1)
+    #ENDIF
+    #IF(%ControlFieldHasTree)
+        #SET(%lControlFieldFieldNo,%lControlFieldFieldNo+1)
+    #ENDIF
+    #IF(%ControlFieldHasStyle)
+        #SET(%lControlFieldFieldNo,%lControlFieldFieldNo+1)
+    #ENDIF
+    #IF(%ControlFieldHasTip)
+        #SET(%lControlFieldFieldNo,%lControlFieldFieldNo+1)
+    #ENDIF
+#ENDFOR
+#FIX(%ControlField,%lControlField)
+#RETURN(%lControlFieldFieldNo)
+#!
+#!****************************************************
+#!

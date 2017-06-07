@@ -1,0 +1,197 @@
+#!---------------------------------------------------------------------
+#PROCEDURE(KCR_LoadSaveGlobalData,'Load/Save Global Data')
+#PROTOTYPE('(BYTE bMode),LONG,PROC')
+#!---------------------------------------------------------------------
+#BOXED('Default MakeHead Prompts'),AT(0,0),WHERE(%False),HIDE
+  #INSERT(%MakeHeadHiddenPrompts)
+#ENDBOXED
+#PREPARE
+  #INSERT (%MakeHead,'KCR_LoadSaveGlobalData (Devuna)','Load/Save Global Data')
+#ENDPREPARE
+#BOXED('Devuna')
+  #INSERT (%Head)
+  #DISPLAY ('This procedure loads/saves the selected data elements'),AT(10)
+  #DISPLAY ('from/to a binary DOS file format.  Works with queues,'),AT(10)
+  #DISPLAY ('groups, and non-dimensioned variables.'),AT(10)
+  #DISPLAY ('bMode 0 = Save, 1 = Load, 2 = Delete'),AT(10)
+  #PROMPT  ('Buffer Size in K:',@N3),%DataBufferSize,REQ,DEFAULT(32)
+  #PROMPT  ('File Name Variable:',FROM(%GlobalData)),%szFileName,REQ
+  #PROMPT  ('Data Element:',FROM(%GlobalData)),%DataElementList,MULTI('Select a Data Element...'),INLINE,UNIQUE
+#ENDBOXED
+#!
+#!
+#AT(%CustomGlobalDeclarations)
+  #FIX(%Driver,'DOS')                           #!DOS driver required
+  #PROJECT(%DriverLIB)
+#ENDAT
+#!
+#!
+#AT(%GlobalMap)
+  MODULE('C_LIB')
+      EIP_memcpy(ulong,ulong,unsigned),name('_memcpy')
+  END
+#ENDAT
+#!
+#!
+#AT(%AfterGlobalIncludes)
+!KCR_LoadSaveGlobalData Mode Equates
+KCR_ActionEquates   ITEMIZE(0),PRE(ACTION)
+SAVE                  EQUATE
+LOAD                  EQUATE
+DELETE                EQUATE
+                    END
+#ENDAT
+#!
+#!
+!----------------------------------------------------------------------
+%Procedure  FUNCTION(bMode)
+I               USHORT,AUTO
+lQueuePointer   LONG,AUTO
+lQueueRecords   LONG,AUTO
+ReturnValue     LONG(Level:Benign)
+sProgramName    STRING(8),AUTO
+ulFilePointer   ULONG,AUTO
+ulLength        ULONG,AUTO
+szSaveFileName  LIKE(%szFileName)
+szBackFileName  LIKE(%szFileName)
+KCR_DOSFile     FILE,DRIVER('DOS'),NAME(%szFileName),PRE(_DOS),CREATE,BINDABLE,THREAD
+Record              RECORD,PRE()
+ulRecordSize            ULONG
+#SET(%ValueConstruct,'FileByte                BYTE,DIM(' & %DataBufferSize & ' * 1024)')
+%ValueConstruct
+                    END
+                END
+ CODE
+ IF %szFileName <> ''
+    CASE bMode
+      OF ACTION:SAVE
+         DO ExportData
+      OF ACTION:LOAD
+         DO ImportData
+      OF ACTION:DELETE
+         DO DeleteData
+    END
+ ELSE
+    ReturnValue = Level:Notify
+ END
+ RETURN(ReturnValue)
+
+!----------------------------------------------------------------------
+DeleteData  ROUTINE
+ !Remove existing backup file
+ szSaveFileName = %szFileName
+ I = INSTRING('.',%szFileName)
+ IF I
+    szBackFileName = SUB(%szFileName,1,I) & 'BAK'
+ ELSE
+    szBackFileName = CLIP(%szFileName) & '.BAK'
+ END
+ %szFileName = szBackFileName
+ IF EXISTS(%szFileName)
+    REMOVE(KCR_DOSFile)
+ END
+
+ !Delete by renaming existing file
+ %szFileName = szSaveFileName
+ IF EXISTS(%szFileName)
+    RENAME(KCR_DOSFile,szBackFileName)
+ END
+
+!----------------------------------------------------------------------
+ExportData  ROUTINE
+ DO DeleteData
+ !Create a new file
+ CREATE(KCR_DOSFile)
+ OPEN(KCR_DOSFile,ReadWrite+DenyAll)
+ IF ~ERRORCODE()
+    !Write Program Name
+    #SET(%ValueConstruct,UPPER(SUB(%ProjectTarget,1,INSTRING('.',%ProjectTarget)-1)))
+    sProgramName = '%ValueConstruct'
+    _DOS:ulRecordSize = SIZE(sProgramName)
+    EIP_memcpy(ADDRESS(_DOS:FileByte),ADDRESS(sProgramName),SIZE(sProgramName))
+    ADD(KCR_DOSFile,_DOS:ulRecordSize+4)
+ #FOR(%DataElementList)
+   #FIX(%GlobalData,%DataElementList)
+
+    !Save %GlobalData ---------------------------
+    IF SIZE(%GlobalData) > SIZE(_DOS:Record)
+       HALT('Buffer Too Small (' & SIZE(%GlobalData) & ')')
+    END
+   #IF(INSTRING('QUEUE',%GlobalDataStatement,1))
+    _DOS:ulRecordSize = RECORDS(%GlobalData)
+    ADD(KCR_DOSFile,4)
+    lQueueRecords = RECORDS(%GlobalData)
+    LOOP lQueuePointer = 1 TO lQueueRecords
+      GET(%GlobalData,lQueuePointer)
+      #INSERT(%EIPSaveData,%GlobalData)
+    END
+   #ELSE
+    #INSERT(%EIPSaveData,%GlobalData)
+   #ENDIF
+ #ENDFOR
+
+    !Close the file -----------------------------
+    CLOSE(KCR_DOSFile)
+ ELSE
+    MESSAGE(%szFileName & ' [' & ERRORCODE() & '] ' & ERROR(),'Error - Save Aborted',ICON:Hand)
+    ReturnValue = Level:Notify
+ END
+
+!----------------------------------------------------------------------
+ImportData  ROUTINE
+ OPEN(KCR_DOSFile,ReadWrite+DenyAll)
+ IF ~ERRORCODE()
+    !Read Program Name Length
+    ulFilePointer = 1
+    GET(KCR_DOSFile,ulFilePointer,4)
+    ulFilePointer += 4
+    ulLength = _DOS:ulRecordSize
+
+    GET(KCR_DOSFile,ulFilePointer,ulLength)
+    ulFilePointer += ulLength
+    EIP_memcpy(ADDRESS(sProgramName),ADDRESS(_DOS:Record),ulLength)
+    #SET(%ValueConstruct,UPPER(SUB(%ProjectTarget,1,INSTRING('.',%ProjectTarget)-1)))
+    IF sProgramName = '%ValueConstruct'
+ #FOR(%DataElementList)
+   #FIX(%GlobalData,%DataElementList)
+
+       !Load %GlobalData ---------------------------
+   #IF(INSTRING('QUEUE',%GlobalDataStatement,1))
+       GET(KCR_DOSFile,ulFilePointer,4)
+       ulFilePointer += 4
+       EIP_memcpy(ADDRESS(lQueueRecords),ADDRESS(_DOS:Record),4)
+       FREE(%GlobalData)
+       LOOP lQueuePointer = 1 TO lQueueRecords
+         #INSERT(%EIPLoadData,%GlobalData)
+         ADD(%GlobalData)
+       END
+   #ELSE
+       #INSERT(%EIPLoadData,%GlobalData)
+   #ENDIF
+ #ENDFOR
+
+       !Close the file -----------------------------
+       CLOSE(KCR_DOSFile)
+    ELSE
+       MESSAGE(%szFileName & ' Invalid Format','Error - Load Aborted',ICON:Hand)
+       ReturnValue = Level:Notify
+    END
+ ELSE
+    MESSAGE(%szFileName & ' [' & ERRORCODE() & '] ' & ERROR(),'Error - Load Aborted',ICON:Hand)
+    ReturnValue = Level:Notify
+ END
+#!
+#!
+#GROUP(%EIPSaveData,%Element)
+_DOS:ulRecordSize = SIZE(%Element)
+EIP_memcpy(ADDRESS(_DOS:FileByte),ADDRESS(%Element),SIZE(%Element))
+ADD(KCR_DOSFile,_DOS:ulRecordSize+4)
+#!
+#!
+#GROUP(%EIPLoadData,%Element)
+GET(KCR_DOSFile,ulFilePointer,4)
+ulFilePointer += 4
+ulLength = _DOS:ulRecordSize
+GET(KCR_DOSFile,ulFilePointer,ulLength)
+ulFilePointer += ulLength
+EIP_memcpy(ADDRESS(%Element),ADDRESS(_DOS:Record),ulLength)
