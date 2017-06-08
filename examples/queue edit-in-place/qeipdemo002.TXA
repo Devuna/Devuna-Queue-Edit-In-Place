@@ -1,0 +1,817 @@
+[MODULE]
+[COMMON]
+FROM ABC GENERATED
+MODIFIED '2017/06/08' '16:23:54'
+[EMBED]
+EMBED %StartOfModule
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 4000
+PROPERTY:END
+!region Copyright and License
+! ================================================================================
+! Notice : Copyright (C) 2000-2017, Devuna
+!          Distributed under LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
+!
+!    This file is part of Queue-Edit-In-Place (https://github.com/Devuna/Queue-Edit-In-Place)
+!
+!    Queue-Edit-In-Place is free software: you can redistribute it and/or modify
+!    it under the terms of the GNU General Public License as published by
+!    the Free Software Foundation, either version 3 of the License, or
+!    (at your option) any later version.
+!
+!    Queue-Edit-In-Place is distributed in the hope that it will be useful,
+!    but WITHOUT ANY WARRANTY; without even the implied warranty of
+!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!    GNU General Public License for more details.
+!
+!    You should have received a copy of the GNU General Public License
+!    along with Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>.
+! ================================================================================
+!endRegion
+[END]
+[END]
+[PROCEDURE]
+NAME FileDemo
+[COMMON]
+FROM ABC Window
+MODIFIED '2017/06/08' '16:54:08'
+[DATA]
+[SCREENCONTROLS]
+! PROMPT('Files Opened:'),USE(?FilesOpened:Prompt)
+! ENTRY(@n3),USE(FilesOpened)
+[REPORTCONTROLS]
+! STRING(@n3),USE(FilesOpened)
+FilesOpened              BYTE
+!!> GUID('7c4e9440-ce19-4ebb-a452-c57af9f2adcb'),PROMPT('Files Opened:'),HEADER('Files Opened'),PICTURE(@n3)
+[PROMPTS]
+%ClassItem UNIQUE DEFAULT  ('Default', 'WindowToolbar')
+%DefaultBaseClassType DEPEND %ClassItem DEFAULT TIMES 2
+WHEN  ('Default') ('WindowManager')
+WHEN  ('WindowToolbar') ('ToolbarClass')
+
+%ActualDefaultBaseClassType DEPEND %ClassItem DEFAULT TIMES 2
+WHEN  ('Default') ('')
+WHEN  ('WindowToolbar') ('')
+
+%ClassLines DEPEND %ClassItem MULTI DEFAULT TIMES 1
+WHEN  ('Default') ('Init {19}PROCEDURE(),BYTE,PROC,DERIVED', 'Kill {19}PROCEDURE(),BYTE,PROC,DERIVED', |
+  'Reset {18}PROCEDURE(BYTE Force=0),DERIVED', 'TakeAccepted {11}PROCEDURE(),BYTE,PROC,DERIVED', |
+  'TakeFieldEvent {9}PROCEDURE(),BYTE,PROC,DERIVED')
+
+%ReturnValue FIELD  ()
+%WindowOperationMode DEFAULT  ('Use WINDOW setting')
+%INISaveWindow LONG  (1)
+%ThisObjectName DEPEND %ClassItem DEFAULT TIMES 2
+WHEN  ('Default') ('ThisWindow')
+WHEN  ('WindowToolbar') ('Toolbar')
+
+%UseDefaultABCBaseClass DEPEND %ClassItem LONG TIMES 2
+WHEN  ('Default') (1)
+WHEN  ('WindowToolbar') (1)
+
+%UseABCBaseClass DEPEND %ClassItem LONG TIMES 2
+WHEN  ('Default') (1)
+WHEN  ('WindowToolbar') (1)
+
+%ABCBaseClass DEPEND %ClassItem DEFAULT TIMES 2
+WHEN  ('Default') ('AsciiFileClass')
+WHEN  ('WindowToolbar') ('AsciiFileClass')
+
+%ExtBaseClass DEPEND %ClassItem DEFAULT TIMES 0
+
+%BaseClassIncludeFile DEPEND %ClassItem DEFAULT TIMES 0
+
+%DeriveFromBaseClass DEPEND %ClassItem LONG TIMES 2
+WHEN  ('Default') (0)
+WHEN  ('WindowToolbar') (0)
+
+%NewMethods DEPEND %ClassItem MULTI LONG TIMES 0
+
+%NewMethodName DEPEND %NewMethods DEFAULT TIMES 0
+
+%NewMethodPrototype DEPEND %NewMethods DEFAULT TIMES 0
+
+%NewClassPropertyItems DEPEND %ClassItem MULTI LONG TIMES 0
+
+%NewClassProperty DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataType DEPEND %NewClassPropertyItems DEFAULT TIMES 1
+WHEN  ('WindowToolbar')TIMES 0
+
+%NewClassOtherType DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataIsRef DEPEND %NewClassPropertyItems LONG TIMES 0
+
+%NewClassDataSize DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataDim1 DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataDim2 DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataDim3 DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataDim4 DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%ClassMethods DEPEND %ClassItem MULTI LONG TIMES 0
+
+%ClassMethodName DEPEND %ClassMethods DEFAULT TIMES 0
+
+%ClassMethodPrototype DEPEND %ClassMethods DEFAULT TIMES 0
+
+%ClassPropertyItems DEPEND %ClassItem MULTI LONG TIMES 0
+
+%ClassProperty DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataType DEPEND %ClassPropertyItems DEFAULT TIMES 1
+WHEN  ('WindowToolbar')TIMES 0
+
+%ClassOtherType DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataIsRef DEPEND %ClassPropertyItems LONG TIMES 0
+
+%ClassDataSize DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataDim1 DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataDim2 DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataDim3 DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataDim4 DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ButtonAction DEPEND %Control DEFAULT TIMES 8
+WHEN  ('') ('No Special Action')
+WHEN  ('?Change') ('No Special Action')
+WHEN  ('?Delete') ('No Special Action')
+WHEN  ('?Insert') ('No Special Action')
+WHEN  ('?List') ('No Special Action')
+WHEN  ('?Load') ('No Special Action')
+WHEN  ('?OkButton') ('No Special Action')
+WHEN  ('?Save') ('No Special Action')
+
+%ButtonRunName DEPEND %Control DEFAULT TIMES 4
+WHEN  ('?Change') ('')
+WHEN  ('?Insert') ('')
+WHEN  ('?Load') ('')
+WHEN  ('?Save') ('')
+
+%ButtonRunParameters DEPEND %Control DEFAULT TIMES 4
+WHEN  ('?Change') ('')
+WHEN  ('?Insert') ('')
+WHEN  ('?Load') ('')
+WHEN  ('?Save') ('')
+
+%ButtonProcedure DEPEND %Control PROCEDURE TIMES 4
+WHEN  ('?Change') ()
+WHEN  ('?Insert') ()
+WHEN  ('?Load') ()
+WHEN  ('?Save') ()
+
+%ButtonThread DEPEND %Control LONG TIMES 4
+WHEN  ('?Change') (0)
+WHEN  ('?Insert') (0)
+WHEN  ('?Load') (0)
+WHEN  ('?Save') (0)
+
+%ButtonThreadStack DEPEND %Control DEFAULT TIMES 8
+WHEN  ('') ('25000')
+WHEN  ('?Change') ('25000')
+WHEN  ('?Delete') ('25000')
+WHEN  ('?Insert') ('25000')
+WHEN  ('?List') ('25000')
+WHEN  ('?Load') ('25000')
+WHEN  ('?OkButton') ('25000')
+WHEN  ('?Save') ('25000')
+
+%ButtonParameters DEPEND %Control DEFAULT TIMES 4
+WHEN  ('?Change') ('')
+WHEN  ('?Insert') ('')
+WHEN  ('?Load') ('')
+WHEN  ('?Save') ('')
+
+%ButtonReturnValueAssignment DEPEND %Control FIELD TIMES 4
+WHEN  ('?Change') ()
+WHEN  ('?Insert') ()
+WHEN  ('?Load') ()
+WHEN  ('?Save') ()
+
+%ButtonReturnValueReferenceAssign DEPEND %Control LONG TIMES 4
+WHEN  ('?Change') (0)
+WHEN  ('?Insert') (0)
+WHEN  ('?Load') (0)
+WHEN  ('?Save') (0)
+
+%ButtonRequest DEPEND %Control DEFAULT TIMES 8
+WHEN  ('') ('None')
+WHEN  ('?Change') ('None')
+WHEN  ('?Delete') ('None')
+WHEN  ('?Insert') ('None')
+WHEN  ('?List') ('None')
+WHEN  ('?Load') ('None')
+WHEN  ('?OkButton') ('None')
+WHEN  ('?Save') ('None')
+
+%ButtonThreadParameters DEPEND %Control DEFAULT TIMES 4
+WHEN  ('?Change') ('')
+WHEN  ('?Insert') ('')
+WHEN  ('?Load') ('')
+WHEN  ('?Save') ('')
+
+%ButtonThreadReturnValueAssignment DEPEND %Control FIELD TIMES 4
+WHEN  ('?Change') ()
+WHEN  ('?Insert') ()
+WHEN  ('?Load') ()
+WHEN  ('?Save') ()
+
+%PreLookupKey DEPEND %Control KEY TIMES 0
+
+%PreLookupField DEPEND %Control COMPONENT TIMES 0
+
+%PreLookupProcedure DEPEND %Control PROCEDURE TIMES 0
+
+%PostLookupKey DEPEND %Control KEY TIMES 0
+
+%PostLookupField DEPEND %Control COMPONENT TIMES 0
+
+%PostLookupProcedure DEPEND %Control PROCEDURE TIMES 0
+
+%PostLookupDuringValidate DEPEND %Control LONG TIMES 8
+WHEN  ('') (1)
+WHEN  ('?Change') (1)
+WHEN  ('?Delete') (1)
+WHEN  ('?Insert') (1)
+WHEN  ('?List') (1)
+WHEN  ('?Load') (1)
+WHEN  ('?OkButton') (1)
+WHEN  ('?Save') (1)
+
+%ForceWindowRefresh DEPEND %Control LONG TIMES 0
+
+%LookupAssign DEPEND %Control MULTI LONG TIMES 0
+
+%MoreField DEPEND %LookupAssign DEFAULT TIMES 0
+
+%MoreTarget DEPEND %LookupAssign FIELD TIMES 0
+
+%CheckedAssigns DEPEND %Control MULTI LONG TIMES 0
+
+%CheckedAssignVariable DEPEND %CheckedAssigns FIELD TIMES 0
+
+%CheckedAssignValue DEPEND %CheckedAssigns DEFAULT TIMES 0
+
+%CheckedHides DEPEND %Control MULTI LONG TIMES 0
+
+%CheckedControl DEPEND %CheckedHides DEFAULT TIMES 0
+
+%CheckedControlAction DEPEND %CheckedHides DEFAULT TIMES 8
+WHEN  ('')TIMES 0
+WHEN  ('?Change')TIMES 0
+WHEN  ('?Delete')TIMES 0
+WHEN  ('?Insert')TIMES 0
+WHEN  ('?List')TIMES 0
+WHEN  ('?Load')TIMES 0
+WHEN  ('?OkButton')TIMES 0
+WHEN  ('?Save')TIMES 0
+
+%CheckedEnables DEPEND %Control MULTI LONG TIMES 0
+
+%CheckedControl1 DEPEND %CheckedEnables DEFAULT TIMES 0
+
+%CheckedControl1Action DEPEND %CheckedEnables DEFAULT TIMES 8
+WHEN  ('')TIMES 0
+WHEN  ('?Change')TIMES 0
+WHEN  ('?Delete')TIMES 0
+WHEN  ('?Insert')TIMES 0
+WHEN  ('?List')TIMES 0
+WHEN  ('?Load')TIMES 0
+WHEN  ('?OkButton')TIMES 0
+WHEN  ('?Save')TIMES 0
+
+%UncheckedAssigns DEPEND %Control MULTI LONG TIMES 0
+
+%UncheckedAssignVariable DEPEND %UncheckedAssigns FIELD TIMES 0
+
+%UncheckedAssignValue DEPEND %UncheckedAssigns DEFAULT TIMES 0
+
+%UnCheckedHides DEPEND %Control MULTI LONG TIMES 0
+
+%UnCheckedControl DEPEND %UnCheckedHides DEFAULT TIMES 0
+
+%UnCheckedControlAction DEPEND %UnCheckedHides DEFAULT TIMES 8
+WHEN  ('')TIMES 0
+WHEN  ('?Change')TIMES 0
+WHEN  ('?Delete')TIMES 0
+WHEN  ('?Insert')TIMES 0
+WHEN  ('?List')TIMES 0
+WHEN  ('?Load')TIMES 0
+WHEN  ('?OkButton')TIMES 0
+WHEN  ('?Save')TIMES 0
+
+%UnCheckedEnables DEPEND %Control MULTI LONG TIMES 0
+
+%UnCheckedControl1 DEPEND %UnCheckedEnables DEFAULT TIMES 0
+
+%UnCheckedControl1Action DEPEND %UnCheckedEnables DEFAULT TIMES 8
+WHEN  ('')TIMES 0
+WHEN  ('?Change')TIMES 0
+WHEN  ('?Delete')TIMES 0
+WHEN  ('?Insert')TIMES 0
+WHEN  ('?List')TIMES 0
+WHEN  ('?Load')TIMES 0
+WHEN  ('?OkButton')TIMES 0
+WHEN  ('?Save')TIMES 0
+
+%GlobalObject DEPEND %ClassItem DEFAULT TIMES 2
+WHEN  ('Default') ('NO')
+WHEN  ('WindowToolbar') ('NO')
+
+%ProcedureDisableEnhanceFocus LONG  (0)
+%ProcedureUseEnterInsteadTabOverride LONG  (0)
+%WindowUseEnterInsteadTab LONG  (1)
+%ProcedureUseEnterInsteadTabExcludeG LONG  (1)
+%WindowUseEnterInsteadTabExclude MULTI DEFAULT  ()
+%WindowStyles MULTI LONG  ()
+%WindowStyleFontName DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleFontNameVariable DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleFontNameIsVariable DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleFontSize DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleFontSizeVariable DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleFontSizeIsVariable DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleFontStyle DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleFontStyleVariable DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleFontStyleIsVariable DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleFontColor DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleFontCharSet DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleForegroundNormal DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleForegroundNormalVariable DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleForegroundNormalIsVariable DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleBackgroundNormal DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleBackgroundNormalVariable DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleBackgroundNormalIsVariable DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleForegroundSelected DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleForegroundSelectedVariable DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleForegroundSelectedIsVariable DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleBackgroundSelected DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleBackgroundSelectedVariable DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStyleBackgroundSelectedIsVariable DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStylePicture DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStylePictureVariable DEPEND %WindowStyles DEFAULT TIMES 0
+
+%WindowStylePictureIsVariable DEPEND %WindowStyles LONG TIMES 0
+
+%WindowStyleOtherListboxes MULTI DEFAULT  ()
+%ProcedureAutoBindFields MULTI LONG  ()
+%ProcedureAutoBindField DEPEND %ProcedureAutoBindFields DEFAULT TIMES 0
+
+%ProcedureAutoBindFieldTPL DEPEND %ProcedureAutoBindFields DEFAULT TIMES 0
+
+%ProcedureAutoBindProcedures MULTI LONG  ()
+%ProcedureAutoBindProcedure DEPEND %ProcedureAutoBindProcedures DEFAULT TIMES 0
+
+%ProcedureAutoBindProcedureTPL DEPEND %ProcedureAutoBindProcedures DEFAULT TIMES 0
+
+%ProcedureUserBindFields MULTI LONG  ()
+%ProcedureUserBindField DEPEND %ProcedureUserBindFields FIELD TIMES 0
+
+%ProcedureAutoBindFieldIgnore DEPEND %ProcedureAutoBindFields LONG TIMES 0
+
+%ProcedureUserBindProcedures MULTI LONG  ()
+%ProcedureUserBindProcedure DEPEND %ProcedureUserBindProcedures PROCEDURE TIMES 0
+
+%ProcedureAutoBindProcedureIgnore DEPEND %ProcedureAutoBindProcedures LONG TIMES 0
+
+%ProcedureUserBindExpressions MULTI LONG  ()
+%ProcedureUserBindExpressionName DEPEND %ProcedureUserBindExpressions DEFAULT TIMES 0
+
+%ProcedureUserBindExpression DEPEND %ProcedureUserBindExpressions DEFAULT TIMES 0
+
+%PreLookupProcedureParameters DEPEND %Control DEFAULT TIMES 0
+
+%PostLookupProcedureParameters DEPEND %Control DEFAULT TIMES 0
+
+%ProcedureAutoBindFieldsIgnored MULTI LONG  ()
+%ProcedureAutoBindFieldIgnored DEPEND %ProcedureAutoBindFieldsIgnored DEFAULT TIMES 0
+
+%ProcedureAutoBindProceduresIgnored MULTI LONG  ()
+%ProcedureAutoBindProcedureIgnored DEPEND %ProcedureAutoBindProceduresIgnored DEFAULT TIMES 0
+
+%ProcedureAutoBindValidToAddField LONG  (0)
+%ProcedureUseEnterInsteadTabExcludeListCombo LONG  (0)
+%ProcedureUseEnterInsteadTabDisableNextTabStop LONG  (0)
+%ProcedureUseEnterInsteadTabEnableNextTabStop LONG  (0)
+%ExtUITabIcon DEPEND %Control DEFAULT TIMES 0
+
+%ExtUITabStyleOverrideGlobal DEPEND %Control LONG TIMES 0
+
+%ExtUITabStyle DEPEND %Control DEFAULT TIMES 3
+WHEN  ('') ('Default')
+WHEN  ('?List') ('Default')
+WHEN  ('?OkButton') ('Default')
+
+%CheckedDisables DEPEND %Control MULTI LONG TIMES 0
+
+%CheckedDisableControl DEPEND %CheckedDisables DEFAULT TIMES 0
+
+%CheckedDisableControlAction DEPEND %CheckedDisables DEFAULT TIMES 3
+WHEN  ('')TIMES 0
+WHEN  ('?List')TIMES 0
+WHEN  ('?OkButton')TIMES 0
+
+%UnCheckedDisables DEPEND %Control MULTI LONG TIMES 0
+
+%UnCheckedDisableControl DEPEND %UnCheckedDisables DEFAULT TIMES 0
+
+%UnCheckedDisableControlAction DEPEND %UnCheckedDisables DEFAULT TIMES 3
+WHEN  ('')TIMES 0
+WHEN  ('?List')TIMES 0
+WHEN  ('?OkButton')TIMES 0
+
+%ProcedureOneInstance LONG  (0)
+%FieldGradientColorType DEPEND %Control DEFAULT TIMES 2
+WHEN  ('') ('Off')
+WHEN  ('?OkButton') ('Off')
+
+%FieldGradientColorTypeVariable DEPEND %Control DEFAULT TIMES 2
+WHEN  ('') ('')
+WHEN  ('?OkButton') ('')
+
+%FieldGradientColorTypeIsVariable DEPEND %Control LONG TIMES 2
+WHEN  ('') (0)
+WHEN  ('?OkButton') (0)
+
+%FieldGradientColorFrom DEPEND %Control LONG TIMES 2
+WHEN  ('') (-1)
+WHEN  ('?OkButton') (-1)
+
+%FieldGradientColorFromVariable DEPEND %Control DEFAULT TIMES 0
+
+%FieldGradientColorFromIsVariable DEPEND %Control LONG TIMES 2
+WHEN  ('') (0)
+WHEN  ('?OkButton') (0)
+
+%FieldGradientColorTo DEPEND %Control LONG TIMES 2
+WHEN  ('') (-1)
+WHEN  ('?OkButton') (-1)
+
+%FieldGradientColorToVariable DEPEND %Control DEFAULT TIMES 0
+
+%FieldGradientColorToIsVariable DEPEND %Control LONG TIMES 2
+WHEN  ('') (0)
+WHEN  ('?OkButton') (0)
+
+%PreserveVarsLoc MULTI LONG  ()
+%PreserveVarLoc DEPEND %PreserveVarsLoc DEFAULT TIMES 0
+
+%ActiveImageEnable DEPEND %Control LONG TIMES 0
+
+%AIObjectName DEPEND %Control DEFAULT TIMES 1
+WHEN  ('') ('AIBtn0')
+
+%AIEnableMimicControl DEPEND %Control LONG TIMES 1
+WHEN  ('') (1)
+
+%AIMimicControl DEPEND %Control DEFAULT TIMES 1
+WHEN  ('') ('?List')
+
+%AIImgRound DEPEND %Control LONG TIMES 0
+
+%AIOverrideImg DEPEND %Control DEFAULT TIMES 0
+
+%AIOverrideImgVariable DEPEND %Control DEFAULT TIMES 0
+
+%AIOverrideImgIsVariable DEPEND %Control LONG TIMES 1
+WHEN  ('') (0)
+
+%AIDisableImg DEPEND %Control DEFAULT TIMES 0
+
+%AIDisableImgVariable DEPEND %Control DEFAULT TIMES 0
+
+%AIDisableImgIsVariable DEPEND %Control LONG TIMES 1
+WHEN  ('') (0)
+
+%AIHotImg DEPEND %Control DEFAULT TIMES 0
+
+%AIHotImgVariable DEPEND %Control DEFAULT TIMES 0
+
+%AIHotImgIsVariable DEPEND %Control LONG TIMES 1
+WHEN  ('') (0)
+
+%AIPressedImg DEPEND %Control DEFAULT TIMES 0
+
+%AIPressedImgVariable DEPEND %Control DEFAULT TIMES 0
+
+%AIPressedImgIsVariable DEPEND %Control LONG TIMES 1
+WHEN  ('') (0)
+
+[EMBED]
+EMBED %ControlEventHandling
+[INSTANCES]
+WHEN '?OkButton'
+[INSTANCES]
+WHEN 'Accepted'
+[DEFINITION]
+[GROUP]
+PRIORITY 5000
+INSTANCE 1
+[END]
+[END]
+WHEN '?Load'
+[INSTANCES]
+WHEN 'Accepted'
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 5000
+PROPERTY:END
+LoadSaveQ(ACTION:LOAD)
+[END]
+[END]
+WHEN '?Save'
+[INSTANCES]
+WHEN 'Accepted'
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 5000
+PROPERTY:END
+LoadSaveQ(ACTION:SAVE)
+ThisWindow.Reset()
+[END]
+[END]
+[END]
+EMBED %WindowManagerMethodCodeSection
+[INSTANCES]
+WHEN 'Reset'
+[INSTANCES]
+WHEN '(BYTE Force=0)'
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 5001
+PROPERTY:END
+glo:szImpexFileName = 'qeipdemo.fil'
+IF EXISTS(glo:szImpexFileName)
+   Enable(?Load)
+ELSE
+   DISABLE(?Load)
+END
+[END]
+[END]
+WHEN 'Init'
+[INSTANCES]
+WHEN '(),BYTE'
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 6001
+PROPERTY:END
+IF ~RECORDS(Q)
+   Q.f1 = 'AAAAAA'
+   Q.f2 = 'Choice1'
+   Q.f3 = '11111'
+   ADD(Q)
+
+   Q.f1 = 'BBBBBB'
+   Q.f2 = 'Choice2'
+   Q.f3 = '22222'
+   ADD(Q)
+
+   Q.f1 = 'CCCCCC'
+   Q.f2 = 'Choice3'
+   Q.f3 = '33333'
+   ADD(Q)
+END
+[END]
+[END]
+[END]
+EMBED %QEIPFieldCreateControlCodeSection
+[INSTANCES]
+WHEN '2'
+[INSTANCES]
+WHEN 'f2'
+[INSTANCES]
+WHEN 'CreateControl'
+[INSTANCES]
+WHEN '(),VIRTUAL,PROTECTED'
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 5001
+PROPERTY:END
+SELF.FEQ{PROP:From} = 'Choice1|Choice2|Choice3|Choice4|Choice5'    !This could also specify another queue
+SELF.FEQ{PROP:Drop} = 3                                            !limit viewable choices
+SELF.FEQ{PROP:VScroll} = TRUE                                      !add a vertical scroll bar
+GET(Q,CHOICE(SELF.ListBoxFeq))
+CASE Q.f2
+OF 'Choice1'
+   SELF.FEQ{PROP:Selected} = 1
+OF 'Choice2'
+   SELF.FEQ{PROP:Selected} = 2
+OF 'Choice3'
+   SELF.FEQ{PROP:Selected} = 3
+OF 'Choice4'
+   SELF.FEQ{PROP:Selected} = 4
+OF 'Choice5'
+   SELF.FEQ{PROP:Selected} = 5
+ELSE
+   SELF.FEQ{PROP:Selected} = 1
+END
+[END]
+[END]
+[END]
+[END]
+[END]
+EMBED %QEIPFieldTakeAcceptedCodeSection
+[INSTANCES]
+WHEN '2'
+[INSTANCES]
+WHEN 'f3'
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 4500
+LABEL
+PROPERTY:END
+  CASE Action                       ! check for action value...
+  OF EditAction:Next                ! if down arrow key
+     Q.f3 -= 1                      !   update he queue field
+     DISPLAY(SELF.feq)              !   display result
+     Action = EditAction:Ignore     !   ignore keystroke
+  OF EditAction:Previous            ! if up arrow key
+     Q.f3 += 1                      !   update the queue field
+     DISPLAY(SELF.feq)              !   display result
+     Action = EditAction:Ignore     !   ignore keystroke
+  END                               ! end case
+[END]
+[END]
+[END]
+EMBED %QEIPTakeActionCodeSection
+[INSTANCES]
+WHEN '2'
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 2500
+PROPERTY:END
+!Sample Code How to validate a field before it is accepted into the queue
+!     IF Self.COLUMN = 1
+!        CASE Action
+!          OF EditAction:Forward
+!        OROF EditAction:Backward
+!        OROF EditAction:Complete
+!        OROF EditAction:Next
+!        OROF EditAction:Previous
+!             IF INSTRING('Z',SELF.Eq.Control.Feq{PROP:ScreenText})  !Validate
+!                Action = EditAction:None                            !return EditAction:None if validation fails
+!             END
+!        END
+!     END   
+[END]
+[END]
+EMBED %LocalDataAfterClasses
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 1000
+PROPERTY:END
+!region Copyright and License
+! ================================================================================
+! Notice : Copyright (C) 2000-2017, Devuna
+!          Distributed under LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
+!
+!    This file is part of Queue-Edit-In-Place (https://github.com/Devuna/Queue-Edit-In-Place)
+!
+!    Queue-Edit-In-Place is free software: you can redistribute it and/or modify
+!    it under the terms of the GNU General Public License as published by
+!    the Free Software Foundation, either version 3 of the License, or
+!    (at your option) any later version.
+!
+!    Queue-Edit-In-Place is distributed in the hope that it will be useful,
+!    but WITHOUT ANY WARRANTY; without even the implied warranty of
+!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!    GNU General Public License for more details.
+!
+!    You should have received a copy of the GNU General Public License
+!    along with Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>.
+! ================================================================================
+!endRegion
+[END]
+[END]
+[ADDITION]
+NAME ABC CloseCurrentWindow
+[INSTANCE]
+INSTANCE 1
+[ADDITION]
+NAME KCR_QEIP KCR_QueueEIP
+[INSTANCE]
+INSTANCE 2
+[PROMPTS]
+%QueueEIPInsertionPoint DEFAULT  ('Append')
+%QueueEIPTabAction DEFAULT  ('Default')
+%QueueEIPTabRemain LONG  (1)
+%QueueEIPEnterAction DEFAULT  ('Default')
+%QueueEIPEnterRemain LONG  (0)
+%QueueEIPArrowAction DEFAULT  ('Default')
+%QueueEIPArrowRemain LONG  (1)
+%QueueEIPArrowRetain LONG  (1)
+%QueueEIPFocusAction DEFAULT  ('Default')
+%QueueEditInPlaceList MULTI LONG  (3, 1, 2)
+%QueueEditInPlaceField DEPEND %QueueEditInPlaceList FIELD TIMES 3
+WHEN  (1) (f2)
+WHEN  (2) (f3)
+WHEN  (3) (f1)
+
+%QueueEditInPlaceFieldDefaultValue DEPEND %QueueEditInPlaceList DEFAULT TIMES 0
+
+%QueueAllowEIP DEPEND %QueueEditInPlaceList LONG TIMES 3
+WHEN  (1) (1)
+WHEN  (2) (1)
+WHEN  (3) (1)
+
+%QueueNewClassInstance DEPEND %QueueEditInPlaceList LONG TIMES 0
+
+%QueueABCBaseClass DEPEND %QueueEditInPlaceList DEFAULT TIMES 0
+
+%QueueEditClass DEPEND %QueueEditInPlaceList DEFAULT TIMES 3
+WHEN  (1) ('EditDropListClass')
+WHEN  (2) ('EditSpinClass')
+WHEN  (3) ('EditEntryClass')
+
+%TplName DEFAULT  ('KCR_QueueEIP (Keystone)')
+%TplDescription DEFAULT  ('Edit In Place Support For Queue')
+%QueueEIPIncludePopupMenu LONG  (1)
+%QueueColorColumn DEPEND %QueueEditInPlaceList LONG TIMES 3
+WHEN  (1) (0)
+WHEN  (2) (0)
+WHEN  (3) (0)
+
+%QueueTextColor DEPEND %QueueEditInPlaceList LONG TIMES 3
+WHEN  (1) (16711680)
+WHEN  (2) (16711680)
+WHEN  (3) (16711680)
+
+%QueueBackColor DEPEND %QueueEditInPlaceList LONG TIMES 3
+WHEN  (1) (-1)
+WHEN  (2) (-1)
+WHEN  (3) (-1)
+
+%QueueTextSelected DEPEND %QueueEditInPlaceList LONG TIMES 3
+WHEN  (1) (-1)
+WHEN  (2) (-1)
+WHEN  (3) (-1)
+
+%QueueBackSelected DEPEND %QueueEditInPlaceList LONG TIMES 3
+WHEN  (1) (-1)
+WHEN  (2) (-1)
+WHEN  (3) (-1)
+
+%HotFields MULTI LONG  ()
+%HotField DEPEND %HotFields FIELD TIMES 0
+
+%QueueEIPContinuousInsert LONG  (1)
+[CALLS]
+LoadSaveQ
+[WINDOW]
+Window  WINDOW('Queue Edit In Place'),AT(,,280,127),FONT('Microsoft Sans Serif',10,,FONT:regular), |
+          DOUBLE,CENTER,GRAY,MDI
+          LIST,AT(5,5,270,100),USE(?List),HVSCROLL,ALRT(MouseLeft2),FORMAT('86L|M~Entry' & |
+            '~@s20@?86L|M~Drop List~@s20@86L|~Spin~@s20@'),FROM(Q),MSG('Browsing Queue'),#FIELDS(f1, |
+            f2,f3),#ORIG(?List),#SEQ(2),#ORDINAL(1)
+          BUTTON('&Insert'),AT(5,110,40,12),USE(?Insert),KEY(InsertKey),#ORIG(?Insert),#SEQ(2), |
+            #ORDINAL(2)
+          BUTTON('&Change'),AT(48,110,40,12),USE(?Change),KEY(CtrlEnter),#ORIG(?Change),#SEQ(2), |
+            #ORDINAL(3)
+          BUTTON('&Delete'),AT(91,110,40,12),USE(?Delete),KEY(DeleteKey),#ORIG(?Delete),#SEQ(2), |
+            #ORDINAL(4)
+          BUTTON('&Load'),AT(141,110,40,12),USE(?Load),#ORIG(?Button5),#ORDINAL(5)
+          BUTTON('&Save'),AT(185,110,40,12),USE(?Save),#ORIG(?Button6),#ORDINAL(6)
+          BUTTON('OK'),AT(235,110,40,12),USE(?OkButton),DEFAULT,#ORDINAL(7)
+        END
+
+[END]

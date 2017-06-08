@@ -1,3 +1,23 @@
+! ================================================================================ 
+! Notice : Copyright (C) 1994-2017, Devuna 
+!          Distributed under LGPLv3 (http://www.gnu.org/licenses/lgpl.html) 
+! 
+!    This file is part of Queue-Edit-In-Place (https://github.com/Devuna/Queue-Edit-In-Place) 
+! 
+!    Queue-Edit-In-Place is free software: you can redistribute it and/or modify 
+!    it under the terms of the GNU General Public License as published by 
+!    the Free Software Foundation, either version 3 of the License, or 
+!    (at your option) any later version. 
+! 
+!    Queue-Edit-In-Place is distributed in the hope that it will be useful, 
+!    but WITHOUT ANY WARRANTY; without even the implied warranty of 
+!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+!    GNU General Public License for more details. 
+! 
+!    You should have received a copy of the GNU General Public License 
+!    along with CwUnit.  If not, see <http://www.gnu.org/licenses/>. 
+! ================================================================================ 
+
 Using Queue Edit in Place Templates for Clarion 10.0:
 
 There are two templates included in the Queue Edit in Place Template set.  

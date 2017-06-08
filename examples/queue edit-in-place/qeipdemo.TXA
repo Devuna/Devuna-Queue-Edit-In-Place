@@ -1,0 +1,72 @@
+[PROGRAM]
+[COMMON]
+FROM ABC ABC
+MODIFIED '2017/06/08' '16:39:30'
+[DATA]
+[SCREENCONTROLS]
+! ENTRY(@s60),USE(Q)
+[REPORTCONTROLS]
+! STRING(@s60),USE(Q)
+Q                        QUEUE,PRE()
+!!> GUID('eb919047-8d8a-4c51-82c6-a361c642cf27'),PICTURE(@s60)
+[SCREENCONTROLS]
+! ENTRY(@s20),USE(f1)
+[REPORTCONTROLS]
+! STRING(@s20),USE(f1)
+f1                         STRING(20)
+!!> GUID('2dc436fb-aa1a-4506-88a7-77c5be71afac'),PICTURE(@s20)
+[SCREENCONTROLS]
+! ENTRY(@s20),USE(f2)
+[REPORTCONTROLS]
+! STRING(@s20),USE(f2)
+f2                         STRING(20)
+!!> GUID('dabe4bac-7402-4c6a-97d5-be606cb764d2'),PICTURE(@s20)
+[SCREENCONTROLS]
+! ENTRY(@s20),USE(f3)
+[REPORTCONTROLS]
+! STRING(@s20),USE(f3)
+f3                         STRING(20)
+!!> GUID('b6c97573-94c3-420c-904e-f45d9498d037'),PICTURE(@s20)
+                         END
+!!> GUID('666ff63c-203f-4b99-af03-5e6e7f2e30b8')
+[SCREENCONTROLS]
+! PROMPT('glo : sz Impex File Name:'),USE(?glo:szImpexFileName:Prompt)
+! TEXT,USE(glo:szImpexFileName),BOXED
+[REPORTCONTROLS]
+! TEXT,USE(glo:szImpexFileName),BOXED
+glo:szImpexFileName      CSTRING(256)
+!!> GUID('59c0947c-07c1-414e-bffd-38070df013f0'),PROMPT('glo : sz Impex File Name:'),HEADER('glo : sz Impex File Name'),PICTURE(@s255)
+[EMBED]
+EMBED %BeforeGlobalDataUser
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 4000
+PROPERTY:END
+!region Copyright and License
+! ================================================================================
+! Notice : Copyright (C) 2000-2017, Devuna
+!          Distributed under LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
+!
+!    This file is part of Queue-Edit-In-Place (https://github.com/Devuna/Queue-Edit-In-Place)
+!
+!    Queue-Edit-In-Place is free software: you can redistribute it and/or modify
+!    it under the terms of the GNU General Public License as published by
+!    the Free Software Foundation, either version 3 of the License, or
+!    (at your option) any later version.
+!
+!    Queue-Edit-In-Place is distributed in the hope that it will be useful,
+!    but WITHOUT ANY WARRANTY; without even the implied warranty of
+!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!    GNU General Public License for more details.
+!
+!    You should have received a copy of the GNU General Public License
+!    along with Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>.
+! ================================================================================
+!endRegion
+[END]
+EMBED %AfterClosingExports
+[INSTANCES]
+[END]
+[END]
+[END]

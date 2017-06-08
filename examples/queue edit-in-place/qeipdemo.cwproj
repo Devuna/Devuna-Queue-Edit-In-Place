@@ -51,6 +51,9 @@
     <Compile Include="qeipdemo008.clw">
       <Generated>true</Generated>
     </Compile>
+    <Compile Include="qeipdemo009.clw">
+      <Generated>true</Generated>
+    </Compile>
     <Compile Include="QEIPDEMO_BC.CLW">
       <Generated>true</Generated>
     </Compile>

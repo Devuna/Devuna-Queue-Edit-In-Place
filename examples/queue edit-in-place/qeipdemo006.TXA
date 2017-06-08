@@ -1,0 +1,49 @@
+[MODULE]
+[COMMON]
+FROM ABC GENERATED
+MODIFIED '2017/06/08' '16:24:26'
+[EMBED]
+EMBED %StartOfModule
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 4000
+PROPERTY:END
+!region Copyright and License
+! ================================================================================
+! Notice : Copyright (C) 2000-2017, Devuna
+!          Distributed under LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
+!
+!    This file is part of Queue-Edit-In-Place (https://github.com/Devuna/Queue-Edit-In-Place)
+!
+!    Queue-Edit-In-Place is free software: you can redistribute it and/or modify
+!    it under the terms of the GNU General Public License as published by
+!    the Free Software Foundation, either version 3 of the License, or
+!    (at your option) any later version.
+!
+!    Queue-Edit-In-Place is distributed in the hope that it will be useful,
+!    but WITHOUT ANY WARRANTY; without even the implied warranty of
+!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!    GNU General Public License for more details.
+!
+!    You should have received a copy of the GNU General Public License
+!    along with Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>.
+! ================================================================================
+!endRegion
+[END]
+[END]
+[PROCEDURE]
+NAME LoadSaveQ
+PROTOTYPE '(BYTE bMode),LONG,PROC'
+PARAMETERS '(BYTE bMode)'
+[COMMON]
+DESCRIPTION 'LoadSaveQ Entries'
+FROM KCR_QEIP KCR_LoadSaveGlobalData
+MODIFIED '2017/06/08' '16:55:54'
+[PROMPTS]
+%TplName DEFAULT  ('KCR_LoadSaveGlobalData (Devuna)')
+%TplDescription DEFAULT  ('Load/Save Global Data')
+%DataBufferSize DEFAULT  ('1')
+%szFileName DEFAULT  ('glo:szImpexFileName')
+%DataElementList UNIQUE DEFAULT  ('Q')
+[END]
