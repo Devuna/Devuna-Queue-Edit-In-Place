@@ -20,3 +20,15 @@
 *.ico binary
 *.dct binary
 *.app binary
+
+# Declare languuage association
+*.clw linguist-language=Clarion
+*.cwproj linguist-language=Clarion
+*.equ linguist-language=Clarion
+*.inc linguist-language=Clarion
+*.int linguist-language=Clarion
+*.sln linguist-language=Clarion
+*.tpl linguist-language=Clarion
+*.tpw linguist-language=Clarion
+*.txa linguist-language=Clarion
+*.txd linguist-language=Clarion
