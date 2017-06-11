@@ -37,7 +37,7 @@ The prompts for this control are virtually the same as a normal browse control.
 The second template is a procedure template that lets you save/load global data
 to/from a binary dos image.  This is provided so you can save/or load queue data.
 
-<span style="color:red">**CAUTION**</span> If you change the structure of any of the data that you have previously
+**CAUTION**``` If you change the structure of any of the data that you have previously
 saved with the template, you will not be able to load the saved data (in fact you 
 will likely cause your program to gpf).  So, make sure the structure of the data
 you intend to save/load is in its final format before using this template.
