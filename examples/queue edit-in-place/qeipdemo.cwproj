@@ -1,13 +1,14 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{13580615-4073-458E-894E-127713F9D6EA}</ProjectGuid>
+    <ProjectGuid>{5DFDE851-CBC8-4FCD-8A54-2471732D45CD}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">Win32</Platform>
     <OutputType>Exe</OutputType>
+    <RootNamespace>qeipdemo</RootNamespace>
     <AssemblyName>qeipdemo</AssemblyName>
     <OutputName>qeipdemo</OutputName>
+    <CWOutputType>Exe</CWOutputType>
     <DefineConstants>_ABCDllMode_=&gt;0%3b_ABCLinkMode_=&gt;1</DefineConstants>
-    <Model>Lib</Model>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>True</DebugSymbols>
@@ -24,6 +25,8 @@
     <check_index>False</check_index>
   </PropertyGroup>
   <ItemGroup>
+    <FileDriver Include="DOS" />
+    <Library Include="qeipdemo.EXE.manifest" />
     <Compile Include="qeipdemo.clw">
       <Generated>true</Generated>
     </Compile>
@@ -51,19 +54,12 @@
     <Compile Include="qeipdemo008.clw">
       <Generated>true</Generated>
     </Compile>
-    <Compile Include="qeipdemo009.clw">
-      <Generated>true</Generated>
-    </Compile>
     <Compile Include="QEIPDEMO_BC.CLW">
       <Generated>true</Generated>
     </Compile>
     <Compile Include="qeipdemo_BC0.CLW">
       <Generated>true</Generated>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <FileDriver Include="DOS" />
-    <Library Include="qeipdemo.EXE.manifest" />
   </ItemGroup>
   <Import Project="$(ClarionBinPath)\SoftVelocity.Build.Clarion.targets" />
 </Project>

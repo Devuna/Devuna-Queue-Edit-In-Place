@@ -14,20 +14,20 @@ PROPERTY:END
 ! Notice : Copyright (C) 2000-2017, Devuna
 !          Distributed under LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
 !
-!    This file is part of Queue-Edit-In-Place (https://github.com/Devuna/Queue-Edit-In-Place)
+!    This file is part of Devuna-Queue-Edit-In-Place (https://github.com/Devuna/Devuna-Queue-Edit-In-Place)
 !
-!    Queue-Edit-In-Place is free software: you can redistribute it and/or modify
+!    Devuna-Queue-Edit-In-Place is free software: you can redistribute it and/or modify
 !    it under the terms of the GNU General Public License as published by
 !    the Free Software Foundation, either version 3 of the License, or
 !    (at your option) any later version.
 !
-!    Queue-Edit-In-Place is distributed in the hope that it will be useful,
+!    Devuna-Queue-Edit-In-Place is distributed in the hope that it will be useful,
 !    but WITHOUT ANY WARRANTY; without even the implied warranty of
 !    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 !    GNU General Public License for more details.
 !
 !    You should have received a copy of the GNU General Public License
-!    along with Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>.
+!    along with this file.  If not, see <http://www.gnu.org/licenses/>.
 ! ================================================================================
 !endRegion
 [END]
@@ -36,7 +36,7 @@ PROPERTY:END
 NAME FileEmbeds
 [COMMON]
 FROM ABC Window
-MODIFIED '2017/06/08' '16:55:38'
+MODIFIED '2017/06/13' '18:39:48'
 [DATA]
 [SCREENCONTROLS]
 ! PROMPT('Files Opened:'),USE(?FilesOpened:Prompt)
@@ -56,7 +56,12 @@ WHEN  ('Default') ('')
 WHEN  ('WindowToolbar') ('')
 
 %ClassLines DEPEND %ClassItem MULTI DEFAULT TIMES 1
-WHEN  ('Default') ('Init {19}PROCEDURE(),BYTE,PROC,DERIVED', 'Kill {19}PROCEDURE(),BYTE,PROC,DERIVED')
+WHEN  ('Default') ('Ask {20}PROCEDURE(),DERIVED', 'ChangeAction {11}PROCEDURE(),BYTE,DERIVED', |
+  'Open {19}PROCEDURE(),DERIVED', 'PrimeUpdate {12}PROCEDURE(),BYTE,PROC,DERIVED', |
+  'Reset {18}PROCEDURE(BYTE Force=0),DERIVED', 'Run {20}PROCEDURE(),BYTE,PROC,DERIVED', |
+  'SetAlerts {14}PROCEDURE(),DERIVED', 'TakeAccepted {11}PROCEDURE(),BYTE,PROC,DERIVED', |
+  'TakeDisableButton      PROCEDURE(SIGNED Control,BYTE MakeDisable),DERIVED', 'TakeEvent {14}PROCEDURE(),BYTE,PROC,DERIVED', |
+  'Update {17}PROCEDURE(),DERIVED')
 
 %ReturnValue FIELD  ()
 %WindowOperationMode DEFAULT  ('Use WINDOW setting')
@@ -460,31 +465,31 @@ ColumnSpecific()
 [END]
 [END]
 [END]
-EMBED %LocalDataAfterClasses
+EMBED %DataSection
 [DEFINITION]
 [SOURCE]
 PROPERTY:BEGIN
-PRIORITY 1000
+PRIORITY 1300
 PROPERTY:END
 !region Copyright and License
 ! ================================================================================
 ! Notice : Copyright (C) 2000-2017, Devuna
 !          Distributed under LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
 !
-!    This file is part of Queue-Edit-In-Place (https://github.com/Devuna/Queue-Edit-In-Place)
+!    This file is part of Devuna-Queue-Edit-In-Place (https://github.com/Devuna/Devuna-Queue-Edit-In-Place)
 !
-!    Queue-Edit-In-Place is free software: you can redistribute it and/or modify
+!    Devuna-Queue-Edit-In-Place is free software: you can redistribute it and/or modify
 !    it under the terms of the GNU General Public License as published by
 !    the Free Software Foundation, either version 3 of the License, or
 !    (at your option) any later version.
 !
-!    Queue-Edit-In-Place is distributed in the hope that it will be useful,
+!    Devuna-Queue-Edit-In-Place is distributed in the hope that it will be useful,
 !    but WITHOUT ANY WARRANTY; without even the implied warranty of
 !    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 !    GNU General Public License for more details.
 !
 !    You should have received a copy of the GNU General Public License
-!    along with Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>.
+!    along with this file.  If not, see <http://www.gnu.org/licenses/>.
 ! ================================================================================
 !endRegion
 [END]
