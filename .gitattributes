@@ -20,6 +20,7 @@
 *.ico binary
 *.dct binary
 *.app binary
+*.chm binary
 
 # Declare languuage association
 *.clw linguist-language=Clarion
