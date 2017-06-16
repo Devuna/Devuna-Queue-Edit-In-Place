@@ -1,7 +1,7 @@
 [MODULE]
 [COMMON]
 FROM ABC GENERATED
-MODIFIED '2017/06/08' '16:23:54'
+MODIFIED '2017/06/16' '15:35:22'
 [EMBED]
 EMBED %StartOfModule
 [DEFINITION]
@@ -27,7 +27,7 @@ PROPERTY:END
 !    GNU General Public License for more details.
 !
 !    You should have received a copy of the GNU General Public License
-!    along with this file.  If not, see <http://www.gnu.org/licenses/>.
+!    along with Devuna-Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>.
 ! ================================================================================
 !endRegion
 [END]
@@ -36,7 +36,7 @@ PROPERTY:END
 NAME FileDemo
 [COMMON]
 FROM ABC Window
-MODIFIED '2017/06/13' '18:38:35'
+MODIFIED '2017/06/16' '15:35:36'
 [DATA]
 [SCREENCONTROLS]
 ! PROMPT('Files Opened:'),USE(?FilesOpened:Prompt)
@@ -55,13 +55,7 @@ WHEN  ('WindowToolbar') ('ToolbarClass')
 WHEN  ('Default') ('')
 WHEN  ('WindowToolbar') ('')
 
-%ClassLines DEPEND %ClassItem MULTI DEFAULT TIMES 1
-WHEN  ('Default') ('Ask {20}PROCEDURE(),DERIVED', 'ChangeAction {11}PROCEDURE(),BYTE,DERIVED', |
-  'Open {19}PROCEDURE(),DERIVED', 'PrimeUpdate {12}PROCEDURE(),BYTE,PROC,DERIVED', |
-  'Reset {18}PROCEDURE(BYTE Force=0),DERIVED', 'Run {20}PROCEDURE(),BYTE,PROC,DERIVED', |
-  'SetAlerts {14}PROCEDURE(),DERIVED', 'TakeAccepted {11}PROCEDURE(),BYTE,PROC,DERIVED', |
-  'TakeDisableButton      PROCEDURE(SIGNED Control,BYTE MakeDisable),DERIVED', 'TakeEvent {14}PROCEDURE(),BYTE,PROC,DERIVED', |
-  'Update {17}PROCEDURE(),DERIVED')
+%ClassLines DEPEND %ClassItem MULTI DEFAULT TIMES 0
 
 %ReturnValue FIELD  ()
 %WindowOperationMode DEFAULT  ('Use WINDOW setting')
@@ -144,8 +138,7 @@ WHEN  ('WindowToolbar')TIMES 0
 
 %ClassDataDim4 DEPEND %ClassPropertyItems DEFAULT TIMES 0
 
-%ButtonAction DEPEND %Control DEFAULT TIMES 8
-WHEN  ('') ('No Special Action')
+%ButtonAction DEPEND %Control DEFAULT TIMES 7
 WHEN  ('?Change') ('No Special Action')
 WHEN  ('?Delete') ('No Special Action')
 WHEN  ('?Insert') ('No Special Action')
@@ -178,8 +171,7 @@ WHEN  ('?Insert') (0)
 WHEN  ('?Load') (0)
 WHEN  ('?Save') (0)
 
-%ButtonThreadStack DEPEND %Control DEFAULT TIMES 8
-WHEN  ('') ('25000')
+%ButtonThreadStack DEPEND %Control DEFAULT TIMES 7
 WHEN  ('?Change') ('25000')
 WHEN  ('?Delete') ('25000')
 WHEN  ('?Insert') ('25000')
@@ -206,8 +198,7 @@ WHEN  ('?Insert') (0)
 WHEN  ('?Load') (0)
 WHEN  ('?Save') (0)
 
-%ButtonRequest DEPEND %Control DEFAULT TIMES 8
-WHEN  ('') ('None')
+%ButtonRequest DEPEND %Control DEFAULT TIMES 7
 WHEN  ('?Change') ('None')
 WHEN  ('?Delete') ('None')
 WHEN  ('?Insert') ('None')
@@ -240,8 +231,7 @@ WHEN  ('?Save') ()
 
 %PostLookupProcedure DEPEND %Control PROCEDURE TIMES 0
 
-%PostLookupDuringValidate DEPEND %Control LONG TIMES 8
-WHEN  ('') (1)
+%PostLookupDuringValidate DEPEND %Control LONG TIMES 7
 WHEN  ('?Change') (1)
 WHEN  ('?Delete') (1)
 WHEN  ('?Insert') (1)
@@ -268,8 +258,7 @@ WHEN  ('?Save') (1)
 
 %CheckedControl DEPEND %CheckedHides DEFAULT TIMES 0
 
-%CheckedControlAction DEPEND %CheckedHides DEFAULT TIMES 8
-WHEN  ('')TIMES 0
+%CheckedControlAction DEPEND %CheckedHides DEFAULT TIMES 7
 WHEN  ('?Change')TIMES 0
 WHEN  ('?Delete')TIMES 0
 WHEN  ('?Insert')TIMES 0
@@ -282,8 +271,7 @@ WHEN  ('?Save')TIMES 0
 
 %CheckedControl1 DEPEND %CheckedEnables DEFAULT TIMES 0
 
-%CheckedControl1Action DEPEND %CheckedEnables DEFAULT TIMES 8
-WHEN  ('')TIMES 0
+%CheckedControl1Action DEPEND %CheckedEnables DEFAULT TIMES 7
 WHEN  ('?Change')TIMES 0
 WHEN  ('?Delete')TIMES 0
 WHEN  ('?Insert')TIMES 0
@@ -302,8 +290,7 @@ WHEN  ('?Save')TIMES 0
 
 %UnCheckedControl DEPEND %UnCheckedHides DEFAULT TIMES 0
 
-%UnCheckedControlAction DEPEND %UnCheckedHides DEFAULT TIMES 8
-WHEN  ('')TIMES 0
+%UnCheckedControlAction DEPEND %UnCheckedHides DEFAULT TIMES 7
 WHEN  ('?Change')TIMES 0
 WHEN  ('?Delete')TIMES 0
 WHEN  ('?Insert')TIMES 0
@@ -316,8 +303,7 @@ WHEN  ('?Save')TIMES 0
 
 %UnCheckedControl1 DEPEND %UnCheckedEnables DEFAULT TIMES 0
 
-%UnCheckedControl1Action DEPEND %UnCheckedEnables DEFAULT TIMES 8
-WHEN  ('')TIMES 0
+%UnCheckedControl1Action DEPEND %UnCheckedEnables DEFAULT TIMES 7
 WHEN  ('?Change')TIMES 0
 WHEN  ('?Delete')TIMES 0
 WHEN  ('?Insert')TIMES 0
@@ -432,8 +418,7 @@ WHEN  ('WindowToolbar') ('NO')
 
 %ExtUITabStyleOverrideGlobal DEPEND %Control LONG TIMES 0
 
-%ExtUITabStyle DEPEND %Control DEFAULT TIMES 3
-WHEN  ('') ('Default')
+%ExtUITabStyle DEPEND %Control DEFAULT TIMES 2
 WHEN  ('?List') ('Default')
 WHEN  ('?OkButton') ('Default')
 
@@ -441,8 +426,7 @@ WHEN  ('?OkButton') ('Default')
 
 %CheckedDisableControl DEPEND %CheckedDisables DEFAULT TIMES 0
 
-%CheckedDisableControlAction DEPEND %CheckedDisables DEFAULT TIMES 3
-WHEN  ('')TIMES 0
+%CheckedDisableControlAction DEPEND %CheckedDisables DEFAULT TIMES 2
 WHEN  ('?List')TIMES 0
 WHEN  ('?OkButton')TIMES 0
 
@@ -450,42 +434,34 @@ WHEN  ('?OkButton')TIMES 0
 
 %UnCheckedDisableControl DEPEND %UnCheckedDisables DEFAULT TIMES 0
 
-%UnCheckedDisableControlAction DEPEND %UnCheckedDisables DEFAULT TIMES 3
-WHEN  ('')TIMES 0
+%UnCheckedDisableControlAction DEPEND %UnCheckedDisables DEFAULT TIMES 2
 WHEN  ('?List')TIMES 0
 WHEN  ('?OkButton')TIMES 0
 
 %ProcedureOneInstance LONG  (0)
-%FieldGradientColorType DEPEND %Control DEFAULT TIMES 2
-WHEN  ('') ('Off')
+%FieldGradientColorType DEPEND %Control DEFAULT TIMES 1
 WHEN  ('?OkButton') ('Off')
 
-%FieldGradientColorTypeVariable DEPEND %Control DEFAULT TIMES 2
-WHEN  ('') ('')
+%FieldGradientColorTypeVariable DEPEND %Control DEFAULT TIMES 1
 WHEN  ('?OkButton') ('')
 
-%FieldGradientColorTypeIsVariable DEPEND %Control LONG TIMES 2
-WHEN  ('') (0)
+%FieldGradientColorTypeIsVariable DEPEND %Control LONG TIMES 1
 WHEN  ('?OkButton') (0)
 
-%FieldGradientColorFrom DEPEND %Control LONG TIMES 2
-WHEN  ('') (-1)
+%FieldGradientColorFrom DEPEND %Control LONG TIMES 1
 WHEN  ('?OkButton') (-1)
 
 %FieldGradientColorFromVariable DEPEND %Control DEFAULT TIMES 0
 
-%FieldGradientColorFromIsVariable DEPEND %Control LONG TIMES 2
-WHEN  ('') (0)
+%FieldGradientColorFromIsVariable DEPEND %Control LONG TIMES 1
 WHEN  ('?OkButton') (0)
 
-%FieldGradientColorTo DEPEND %Control LONG TIMES 2
-WHEN  ('') (-1)
+%FieldGradientColorTo DEPEND %Control LONG TIMES 1
 WHEN  ('?OkButton') (-1)
 
 %FieldGradientColorToVariable DEPEND %Control DEFAULT TIMES 0
 
-%FieldGradientColorToIsVariable DEPEND %Control LONG TIMES 2
-WHEN  ('') (0)
+%FieldGradientColorToIsVariable DEPEND %Control LONG TIMES 1
 WHEN  ('?OkButton') (0)
 
 %PreserveVarsLoc MULTI LONG  ()
@@ -493,14 +469,11 @@ WHEN  ('?OkButton') (0)
 
 %ActiveImageEnable DEPEND %Control LONG TIMES 0
 
-%AIObjectName DEPEND %Control DEFAULT TIMES 1
-WHEN  ('') ('AIBtn0')
+%AIObjectName DEPEND %Control DEFAULT TIMES 0
 
-%AIEnableMimicControl DEPEND %Control LONG TIMES 1
-WHEN  ('') (1)
+%AIEnableMimicControl DEPEND %Control LONG TIMES 0
 
-%AIMimicControl DEPEND %Control DEFAULT TIMES 1
-WHEN  ('') ('?List')
+%AIMimicControl DEPEND %Control DEFAULT TIMES 0
 
 %AIImgRound DEPEND %Control LONG TIMES 0
 
@@ -508,29 +481,25 @@ WHEN  ('') ('?List')
 
 %AIOverrideImgVariable DEPEND %Control DEFAULT TIMES 0
 
-%AIOverrideImgIsVariable DEPEND %Control LONG TIMES 1
-WHEN  ('') (0)
+%AIOverrideImgIsVariable DEPEND %Control LONG TIMES 0
 
 %AIDisableImg DEPEND %Control DEFAULT TIMES 0
 
 %AIDisableImgVariable DEPEND %Control DEFAULT TIMES 0
 
-%AIDisableImgIsVariable DEPEND %Control LONG TIMES 1
-WHEN  ('') (0)
+%AIDisableImgIsVariable DEPEND %Control LONG TIMES 0
 
 %AIHotImg DEPEND %Control DEFAULT TIMES 0
 
 %AIHotImgVariable DEPEND %Control DEFAULT TIMES 0
 
-%AIHotImgIsVariable DEPEND %Control LONG TIMES 1
-WHEN  ('') (0)
+%AIHotImgIsVariable DEPEND %Control LONG TIMES 0
 
 %AIPressedImg DEPEND %Control DEFAULT TIMES 0
 
 %AIPressedImgVariable DEPEND %Control DEFAULT TIMES 0
 
-%AIPressedImgIsVariable DEPEND %Control LONG TIMES 1
-WHEN  ('') (0)
+%AIPressedImgIsVariable DEPEND %Control LONG TIMES 0
 
 [EMBED]
 EMBED %ControlEventHandling
@@ -721,7 +690,7 @@ PROPERTY:END
 !    GNU General Public License for more details.
 !
 !    You should have received a copy of the GNU General Public License
-!    along with this file.  If not, see <http://www.gnu.org/licenses/>.
+!    along with Devuna-Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>.
 ! ================================================================================
 !endRegion
 [END]

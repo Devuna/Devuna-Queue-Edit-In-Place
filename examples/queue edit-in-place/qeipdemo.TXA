@@ -1,7 +1,7 @@
 [PROGRAM]
 [COMMON]
 FROM ABC ABC
-MODIFIED '2017/06/08' '16:39:30'
+MODIFIED '2017/06/16' '15:34:32'
 [DATA]
 [SCREENCONTROLS]
 ! ENTRY(@s60),USE(Q)
@@ -61,7 +61,7 @@ PROPERTY:END
 !    GNU General Public License for more details.
 !
 !    You should have received a copy of the GNU General Public License
-!    along with this file.  If not, see <http://www.gnu.org/licenses/>.
+!    along with Devuna-Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>.
 ! ================================================================================
 !endRegion
 [END]

@@ -1,6 +1,6 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{5DFDE851-CBC8-4FCD-8A54-2471732D45CD}</ProjectGuid>
+    <ProjectGuid>{6C49CFD6-F943-4F96-B36F-0349D21F094C}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">Win32</Platform>
     <OutputType>Exe</OutputType>
