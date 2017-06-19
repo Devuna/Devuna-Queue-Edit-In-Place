@@ -22,6 +22,9 @@
 *.app binary
 *.chm binary
 
+# Declare help as documentation folder
+help/* linguist-documentation
+
 # Declare languuage association
 *.clw linguist-language=Clarion
 *.cwproj linguist-language=Clarion
