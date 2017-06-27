@@ -32,25 +32,24 @@
 #!Used with permission.  Look for "The Clarion Handy Tools" at www.cwhandy.com
 #!-----------------------------------------------------------------------------------------------------------
 #SYSTEM
- #TAB('Devuna Templates')
+ #TAB('Devuna Queue Edit-in-Place Templates')
   #INSERT  (%SysHead)
-  #BOXED   ('About Devuna Templates'),AT(5)
+  #BOXED   ('About Devuna Queue Edit-in-Place Templates'),AT(5)
     #DISPLAY (''),AT(15)
-    #DISPLAY ('Warning: These templates are protected by copyright   '),AT(15)
-    #DISPLAY ('law and international treaties.   Unauthorized use,   '),AT(15)
-    #DISPLAY ('reproduction or distribution of these templates, or   '),AT(15)
-    #DISPLAY ('any part of  them, without the expressed written      '),AT(15)
-    #DISPLAY ('consent of Devuna Inc., may      '),AT(15)
-    #DISPLAY ('result in severe civil and criminal penalties, and    '),AT(15)
-    #DISPLAY ('will be prosecuted to the maximum extent possible     '),AT(15)
-    #DISPLAY ('under law.'),AT(15)
+    #DISPLAY ('This template 1s free software:                                       '),AT(15)
+    #DISPLAY ('You can redistribute it and/or modify it under the terms of the GNU   '),AT(15)
+    #DISPLAY ('General Public License as published by the Free Software Foundation,  '),AT(15)
+    #DISPLAY ('either version 3 of the License,or (at your option) any later version.'),AT(15)
     #DISPLAY (''),AT(15)
-    #DISPLAY ('For more information, contact the author at:'),AT(15)
-    #DISPLAY ('rrogers@devuna.com'),AT(15)
-    #DISPLAY ('(C)1994-2017 Devuna'),AT(15)
+    #DISPLAY ('This template is distributed in the hope that they will be useful     '),AT(15)
+    #DISPLAY ('but WITHOUT ANY WARRANTY; without even the implied warranty           '),AT(15)
+    #DISPLAY ('of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.'),AT(15)
+    #DISPLAY (''),AT(15)
+    #DISPLAY ('See the GNU General Public License for more details.'),AT(15)
+    #DISPLAY ('http://www.gnu.org/licenses/'),AT(15)
+    #DISPLAY ('Copyright 2017 Devuna'),AT(15)
   #ENDBOXED
  #ENDTAB
-
 #!-----------------------------------------------------------------------------------------------------------
 #GROUP (%MakeHeadHiddenPrompts)
   #PROMPT('',@S50),%TplName
