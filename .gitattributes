@@ -25,6 +25,7 @@
 *.jpg binary
 *.png binary
 *.sbp binary
+*.zip binary
 
 # Declare help as documentation folder
 help/* linguist-documentation
