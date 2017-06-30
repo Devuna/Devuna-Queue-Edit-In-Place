@@ -1,0 +1,24 @@
+<AddIn name    = "Devuna"
+   author      = "Devuna"
+   url         = ""
+   copyright   = ""
+   description = "Devuna">
+	<Manifest>
+      <Identity name="Devuna.Addin" version="1.0"/>
+		<Dependency addin = "SharpDevelop" version = "2.1"/>
+		<Dependency addin = "AccessoryMenu.Addin"/>
+	</Manifest>
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Help/Accessory">
+      <MenuItem id = "Devuna" label = "Devuna" type = "Menu">
+         <MenuItem id = "Devuna Website"
+            label = "Visit the Devuna Website"
+				icon = "Icons.16x16.WebSearchIcon"
+            link = "http://www.devuna.com"/>
+         <MenuItem id = "Devuna Examples"
+              label = "Devuna Examples"
+				  icon = "Icons.16x16.Folder"
+              link = "home://Accessory\Vendor\Devuna\Devuna Examples.lnk"/>
+         <MenuItem id = "DevunaSeparator" type = "Separator"/>
+		</MenuItem>
+	</Path>
+</AddIn>

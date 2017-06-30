@@ -1,0 +1,13 @@
+<AddIn name    = "AccessoryMenu"
+   author      = "CapeSoft"
+   url         = ""
+   copyright   = ""
+   description = "">
+	<Manifest>
+		<Identity name="AccessoryMenu.Addin" version="0.2"/>
+		<Dependency addin = "SharpDevelop" version = "2.1"/>
+	</Manifest>
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Help">
+		<MenuItem id = "Accessory" label = "A&amp;ccessory" type="Menu" insertbefore = "About"/>
+	</Path>
+</AddIn>

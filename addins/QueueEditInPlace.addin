@@ -1,0 +1,12 @@
+<AddIn name="Queue Edit-In-Place" author="Devuna" url="http://www.devuna.com" description="Queue Edit-In-Place Accessory Menu Addin">
+<Manifest><Identity name="QueueEditInPlace.addin" version="1.0"/><Dependency addin="SharpDevelop" version="2.1"/><Dependency addin="Devuna.Addin"/></Manifest>
+<BitmapResources file="Resources/DevunaBitmapResources.resources" />
+<Path name="/SharpDevelop/Workbench/MainMenu/Help/Accessory/Devuna">
+<MenuItem id="QueueEditInPlaceHelp" 
+		  label="Queue Edit-In-Place" 
+		  icon = "Icons.16x16.textDocument" 
+		  insertafter="DevunaSeparator" 
+		  link="home://accessory/Documents/Devuna/Queue Edit-In-Place/readme.txt">
+</MenuItem>
+</Path>
+</AddIn>

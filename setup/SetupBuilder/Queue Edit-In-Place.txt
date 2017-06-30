@@ -1,0 +1,181 @@
+! //////////////////////////////////////////////////////////////////////////////////////////////////
+! //
+! // Notice : Copyright (C) 2017, Devuna
+! //          Distributed under LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
+! //
+! //    This file is part of Devuna-Queue-Edit-In-Place (https://github.com/Devuna/Devuna-Queue-Edit-In-Place)
+! //
+! //    Devuna-Queue-Edit-In-Place is free software: you can redistribute it and/or modify
+! //    it under the terms of the GNU General Public License as published by
+! //    the Free Software Foundation, either version 3 of the License, or
+! //    (at your option) any later version.
+! //
+! //    Devuna-Queue-Edit-In-Place is distributed in the hope that it will be useful,
+! //    but WITHOUT ANY WARRANTY; without even the implied warranty of
+! //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! //    GNU General Public License for more details.
+! //
+! //    You should have received a copy of the GNU General Public License
+! //    along with Devuna-Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>.
+! //
+! //////////////////////////////////////////////////////////////////////////////////////////////////
+! //
+! //   SSSS S  BBBBBB
+! //  S    SS   B    B
+! //  S     S   B    B
+! //  S         B    B
+! //   SSS      BBBBB         SetupBuilder 10 Install Project Script
+! //      SS    B    B
+! //        S   B    B        Created with build: 10.0.5452
+! //  S     S   B    B
+! //  SS    S   B    B
+! //  S SSSS   BBBBBB
+! //
+! //////////////////////////////////////////////////////////////////////////////////////////////////
+  
+[ Support Files ]
+! --- Required temporary installation files ---
+  
+  
+[ Billboards ]
+! --- Billboard files ---
+  
+  
+[ Initialize Setup ]
+! --- Define commonly used constants ---
+#include script "Common Definitions.sbi"
+  
+! Important: Initialize default install folder and program group variables
+Set Variable %_SB_INSTALLDIR% to "[INSTALLDIR]"
+Set Variable %_SB_PROGRAMGROUP% to "[PRODUCTNAME]"
+  
+! %_SB_BACKUPDIR% holds the path that all backup files will be copied to when overwritten
+Set Variable %_SB_BACKUPDIR% to "%_SB_INSTALLDIR%\BACKUP"
+  
+  
+[ Features ]
+! If features are enabled, %_SB_FEATURESID% holds all selections separated by a vertical bar "|"
+! Warning: It is not recommended to manually modify the %_SB_FEATURESID% variable!
+  
+  
+[ Setup Types ]
+! If setup types are enabled, %_SB_SETUPTYPEID% holds the selected type
+! Warning: It is not recommended to manually modify the %_SB_SETUPTYPEID% variable!
+  
+::Define Setup Type ("Typical")
+::Define Setup Type ("Minimal")
+::Define Setup Type ("Custom") [Custom Type]
+  
+[ User Interface ]
+! Wizard dialog definition(s)
+Define Wizard Dialog "#1" (Welcome)
+Define Wizard Dialog "CLARIONDETECTION" (Clarion Environment Detection) (%_SB_INSTALLDIR%) [C100]
+Define Wizard Dialog "#3" (License Agreement)
+Define Wizard Dialog "#4" (Select Install Folder) (%_SB_INSTALLDIR%)
+Define Wizard Dialog "#5" (Ready to Install) ()
+  
+! The Wizard Loop displays the dialog screens that the user sees in the installation
+Loop Wizard (Abort Dialog Active)
+End
+  
+! Display progress dialog
+Progress Dialog: Display ()
+  
+! Create installation .log
+Create Installation App & Log ("[UNINSTALL_LOG]")
+  
+[ Create Folders ]
+  
+::Create Folder "%_SB_INSTALLDIR%\accessory\bin" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\lib" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\libsrc" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\libsrc\win" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\template" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\template\win" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\images" [Feature:Always Install]
+::Create Folder "%_CSIDL_COMMON_DOCUMENTS%" [Feature:Always Install]
+::Create Folder "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity" [Feature:Always Install]
+::Create Folder "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10" [Feature:Always Install]
+::Create Folder "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory" [Feature:Always Install]
+::Create Folder "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna" [Feature:Always Install]
+::Create Folder "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Examples\Queue Edit-In-Place" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory" [Feature:Always Install]
+::Create Folder "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Examples" [Feature:Always Install]
+::Create Folder "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Documents" [Feature:Always Install]
+::Create Folder "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Documents\Queue Edit-In-Place" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\addins" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\addins\devuna" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\documents" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\vendor" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\vendor\devuna" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\documents\devuna" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\addins\devuna\Resources" [Feature:Always Install]
+::Create Folder "%_SB_INSTALLDIR%\accessory\documents\devuna\Queue Edit-In-Place" [Feature:Always Install]
+  
+[ Install Files ]
+  
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\examples\queue edit-in-place\Image1.bmp" to "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Examples\Queue Edit-In-Place\Image1.bmp" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\examples\queue edit-in-place\Image2.bmp" to "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Examples\Queue Edit-In-Place\Image2.bmp" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\examples\queue edit-in-place\Image3.bmp" to "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Examples\Queue Edit-In-Place\Image3.bmp" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\examples\queue edit-in-place\Image4.bmp" to "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Examples\Queue Edit-In-Place\Image4.bmp" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\examples\queue edit-in-place\kcrchain.ico" to "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Examples\Queue Edit-In-Place\kcrchain.ico" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\examples\queue edit-in-place\qeipdemo.app" to "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Examples\Queue Edit-In-Place\qeipdemo.app" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\examples\queue edit-in-place\qeipdemo.cwproj" to "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Examples\Queue Edit-In-Place\qeipdemo.cwproj" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\examples\queue edit-in-place\qeipdemo.sln" to "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Examples\Queue Edit-In-Place\qeipdemo.sln" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\LICENSE" to "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Documents\Queue Edit-In-Place\LICENSE" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\documents\ReadMe.txt" to "%_CSIDL_COMMON_DOCUMENTS%\Softvelocity\Clarion10\Accessory\Devuna\Documents\Queue Edit-In-Place\ReadMe.txt" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\vendor\Devuna Examples.lnk" to "%_SB_INSTALLDIR%\accessory\vendor\devuna\Devuna Examples.lnk" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\LICENSE" to "%_SB_INSTALLDIR%\accessory\documents\devuna\Queue Edit-In-Place\LICENSE" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\addins\Resources\DevunaBitmapResources.resources" to "%_SB_INSTALLDIR%\accessory\addins\devuna\Resources\DevunaBitmapResources.resources" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\addins\AccessoryMenu.addin" to "%_SB_INSTALLDIR%\accessory\addins\AccessoryMenu.addin" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\addins\Devuna.addin" to "%_SB_INSTALLDIR%\accessory\addins\Devuna.addin" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\addins\QueueEditInPlace.addin" to "%_SB_INSTALLDIR%\accessory\addins\devuna\QueueEditInPlace.addin" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\documents\ReadMe.txt" to "%_SB_INSTALLDIR%\accessory\documents\devuna\Queue Edit-In-Place\ReadMe.txt" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\images\kcrchain.ico" to "%_SB_INSTALLDIR%\accessory\images\kcrchain.ico" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\libsrc\win\kcrqeip.inc" to "%_SB_INSTALLDIR%\accessory\libsrc\win\kcrqeip.inc" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\template\win\kcrmemcp.tpw" to "%_SB_INSTALLDIR%\accessory\template\win\kcrmemcp.tpw" [Feature:Always Install]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\template\win\kcrqeip.tpl" to "%_SB_INSTALLDIR%\accessory\template\win\kcrqeip.tpl" [Feature:Always Install] [ClarionTpl]
+Install File(s) "C:\GitHub\Devuna-Queue-Edit-In-Place\template\win\kcrqeip.tpw" to "%_SB_INSTALLDIR%\accessory\template\win\kcrqeip.tpw" [Feature:Always Install]
+  
+[ Create Shortcuts ]
+  
+::Create Program Folder "Clarion 10.0 Accessories" in "Programs\Clarion 10.0 Accessories" [Feature:Always Install]
+::Create Program Folder "Devuna" in "Programs\Clarion 10.0 Accessories\Devuna" [Feature:Always Install]
+::Create Program Folder "Queue Edit-In-Place" in "Programs\Clarion 10.0 Accessories\Devuna\Queue Edit-In-Place" [Feature:Always Install]
+::Create Shortcut "Uninstall Queue Edit-In-Place" in "Programs\Clarion 10.0 Accessories\Devuna\Queue Edit-In-Place\Uninstall Queue Edit-In-Place" [Feature:Always Install]
+::Create Shortcut "Documents" in "Programs\Clarion 10.0 Accessories\Devuna\Queue Edit-In-Place\Documents" [Feature:Always Install]
+::Create Shortcut "Example" in "Programs\Clarion 10.0 Accessories\Devuna\Queue Edit-In-Place\Example" [Feature:Always Install]
+::Create Shortcut "Help" in "Programs\Clarion 10.0 Accessories\Devuna\Queue Edit-In-Place\Help" [Feature:Always Install]
+  
+[ Edit Registry ]
+  
+  
+[ Edit INI Files ]
+  
+Set Variable %CURRENTDATE% to FUNCTION:Get System Info (Current Date, Format: "12")
+Put INI Value ("Devuna Accessories", "QueueEditInPlaceInstall = 10.0") to "%_SB_INSTALLDIR%\accessory\DevunaAccessories.ini"
+Put INI Value ("Devuna Accessories", "QueueEditInPlaceInstalledDate = %CURRENTDATE%") to "%_SB_INSTALLDIR%\accessory\DevunaAccessories.ini"
+  
+  
+[ Modify System ]
+  
+  
+[ Execute Programs ]
+  
+  
+[ Finalize Setup ]
+! Register all queued pending file operations
+Register all pending file operations ()
+  
+! Register templates for Clarion 10.0
+Progress Dialog: Set Status Text #1 to "Registering C10 templates.  Please Wait..."
+Register all pending Clarion Templates in "%_SB_INSTALLDIR%\bin\Clarion.exe"
+  
+[ Final User Interface ]
+! Final wizard dialog definition(s)
+Define Wizard Dialog "#1" (Finish) ()
+  
+! The Wizard Loop displays the dialog screens that the user sees in the installation
+Loop Wizard (Abort Dialog Active)
+End
+  
