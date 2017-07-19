@@ -1,24 +1,23 @@
-#! ================================================================================ 
-#! Notice : Copyright (C) 2017, Devuna 
-#!          Distributed under LGPLv3 (http://www.gnu.org/licenses/lgpl.html) 
-#! 
-#!    This file is part of Devuna-Queue-Edit-In-Place (https://github.com/Devuna/Devuna-Queue-Edit-In-Place) 
-#! 
-#!    Devuna-Queue-Edit-In-Place is free software: you can redistribute it and/or modify 
-#!    it under the terms of the GNU General Public License as published by 
-#!    the Free Software Foundation, either version 3 of the License, or 
-#!    (at your option) any later version. 
-#! 
-#!    Devuna-Queue-Edit-In-Place is distributed in the hope that it will be useful, 
-#!    but WITHOUT ANY WARRANTY; without even the implied warranty of 
-#!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
-#!    GNU General Public License for more details. 
+#! ================================================================================
+#! Notice : Copyright (C) 2017, Devuna
+#!          Distributed under the MIT License (https://opensource.org/licenses/MIT)
 #!
-#!    You should have received a copy of the GNU General Public License 
-#!    along with Devuna-Queue-Edit-In-Place.  If not, see <http://www.gnu.org/licenses/>. 
-#! ================================================================================ 
-#!                              
-#!                              
+#!    This file is part of Devuna-Queue-Edit-In-Place (https://github.com/Devuna/Devuna-Queue-Edit-In-Place)
+#!
+#!    Devuna-Queue-Edit-In-Place is free software: you can redistribute it and/or modify
+#!    it under the terms of the MIT License as published by
+#!    the Open Source Initiative.
+#!
+#!    Devuna-Queue-Edit-In-Place is distributed in the hope that it will be useful,
+#!    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#!    MIT License for more details.
+#!
+#!    You should have received a copy of the MIT License
+#!    along with Devuna-Queue-Edit-In-Place.  If not, see <https://opensource.org/licenses/MIT>.
+#! ================================================================================
+#!
+#!
 #!===============================================================================================
 #TEMPLATE(KCR_QEIP,'Devuna Application Builder Class Templates'),FAMILY('ABC')
 #!
@@ -39,13 +38,12 @@
     #DISPLAY ('This template 1s free software:                                       '),AT(15)
     #DISPLAY ('You can redistribute it and/or modify it under the terms of the GNU   '),AT(15)
     #DISPLAY ('General Public License as published by the Free Software Foundation,  '),AT(15)
-    #DISPLAY ('either version 3 of the License,or (at your option) any later version.'),AT(15)
     #DISPLAY (''),AT(15)
     #DISPLAY ('This template is distributed in the hope that they will be useful     '),AT(15)
     #DISPLAY ('but WITHOUT ANY WARRANTY; without even the implied warranty           '),AT(15)
     #DISPLAY ('of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.'),AT(15)
     #DISPLAY (''),AT(15)
-    #DISPLAY ('See the GNU General Public License for more details.'),AT(15)
+    #DISPLAY ('See the MIT License for more details.'),AT(15)
     #DISPLAY ('http://www.gnu.org/licenses/'),AT(15)
     #DISPLAY ('Copyright 2017 Devuna'),AT(15)
   #ENDBOXED
